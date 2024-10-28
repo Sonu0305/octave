@@ -56,7 +56,7 @@
 ## If the optional argument @var{dim} is given, operate along this dimension.
 ## The normalization argument @var{opt} must be given before the dimension.
 ## To use the default value for @var{opt} you may pass an empty input
-## argument [].
+## argument @code{[]}.
 ##
 ## The optional argument @var{nancond} is a string that controls how @code{NaN}
 ## and @code{NA} values affect the output of @qcode{"movstd"}. The value
@@ -124,12 +124,15 @@ endfunction
 %!assert <*66021> (movstd (1:5, 3, [], 2), [1/sqrt(2), 1, 1, 1, 1/sqrt(2)], eps)
 %!assert <*65928> (movstd (1:5, 3, 0, 3), zeros (1, 5))
 
-%!assert (movstd (magic (4), 3, 0), sqrt ([60.5, 40.5, 24.5, 12.5; 31, 61/3, 37/3, 7;...
-%!                                   7, 37/3, 61/3, 31; 12.5, 24.5, 40.5, 60.5]), 2*eps)
-%!assert (movstd (magic (4), 3, 0, 1), sqrt ([60.5, 40.5, 24.5, 12.5; 31, 61/3, 37/3, 7;...
-%!                                   7, 37/3, 61/3, 31; 12.5, 24.5, 40.5, 60.5]), 2*eps)
-%!assert (movstd (magic (4), 3, 0, 2), sqrt ([98, 61, 37, 50; 18, 31/3, 7/3, 2; ...
-%!                                   2, 7/3, 31/3, 18; 50, 37, 61, 98]), 2*eps)
+%!assert (movstd (magic (4), 3, 0),
+%!        sqrt ([60.5, 40.5, 24.5, 12.5; 31, 61/3, 37/3, 7; ...
+%!               7, 37/3, 61/3, 31; 12.5, 24.5, 40.5, 60.5]), 2*eps)
+%!assert (movstd (magic (4), 3, 0, 1),
+%!        sqrt ([60.5, 40.5, 24.5, 12.5; 31, 61/3, 37/3, 7;...
+%!               7, 37/3, 61/3, 31; 12.5, 24.5, 40.5, 60.5]), 2*eps)
+%!assert (movstd (magic (4), 3, 0, 2),
+%!        sqrt ([98, 61, 37, 50; 18, 31/3, 7/3, 2; ...
+%!        2, 7/3, 31/3, 18; 50, 37, 61, 98]), 2*eps)
 %!assert <*65928> (movstd (magic (4), 3, 0, 3), zeros (4, 4))
 
 %!assert <*55241> (movstd ((1:10).', 3), [1/sqrt(2); ones(8,1); 1/sqrt(2)], eps)

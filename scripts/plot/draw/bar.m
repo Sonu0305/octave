@@ -342,7 +342,7 @@ endfunction
 %!   close (hf2);
 %! end_unwind_protect
 
-## Style "hist"
+## Style "hist".
 %!test
 %! hf = figure ("visible", "off");
 %! unwind_protect
@@ -366,7 +366,7 @@ endfunction
 %!   close (hf);
 %! end_unwind_protect
 
-## Style "histc"
+## Style "histc".
 %!test
 %! hf = figure ("visible", "off");
 %! unwind_protect
@@ -538,7 +538,7 @@ endfunction
 %!   close (hf);
 %! end_unwind_protect
 
-## Non-zero baseline
+## Non-zero baseline.
 %!test
 %! hf = figure ("visible", "off");
 %! unwind_protect
@@ -569,7 +569,7 @@ endfunction
 %!   close (hf);
 %! end_unwind_protect
 
-## Color settings:
+## Color settings.
 %!test
 %! hf = figure ("visible", "off");
 %! unwind_protect
@@ -633,7 +633,7 @@ endfunction
 %!   close (hf);
 %! end_unwind_protect
 
-## Change to horizontal:
+## Switch from vertical to horizontal.
 
 %!test <*65671>  # Baseline should change to horizontal with bars.
 %! hf = figure ("visible", "off");
@@ -893,7 +893,7 @@ endfunction
 %!   close (hf);
 %! end_unwind_protect
 
-#### Ensure y tick labels are updated with ydata changes.
+## Ensure y tick labels are updated with ydata changes.
 %!test <*65734>
 %! hf = figure ("visible", "off");
 %! unwind_protect
@@ -922,7 +922,6 @@ endfunction
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
-
 
 %% Test input validation
 %!error <Invalid call> bar ()

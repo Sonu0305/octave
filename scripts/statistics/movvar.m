@@ -56,7 +56,7 @@
 ## If the optional argument @var{dim} is given, operate along this dimension.
 ## The normalization argument @var{opt} must be given before the dimension.
 ## To use the default value for @var{opt} you may pass an empty input
-## argument [].
+## argument @code{[]}.
 ##
 ## The optional argument @var{nancond} is a string that controls how @code{NaN}
 ## and @code{NA} values affect the output of @qcode{"movvar"}. The value
@@ -124,12 +124,15 @@ endfunction
 %!assert <*66021> (movvar (1:5, 3, [], 2), [0.5, 1, 1, 1, 0.5], eps)
 %!assert <*65928> (movvar (1:5, 3, 0, 3), zeros (1, 5))
 
-%!assert (movvar (magic (4), 3, 0), [60.5, 40.5, 24.5, 12.5; 31, 61/3, 37/3, 7;...
-%!                                   7, 37/3, 61/3, 31; 12.5, 24.5, 40.5, 60.5], 20*eps)
-%!assert (movvar (magic (4), 3, 0, 1), [60.5, 40.5, 24.5, 12.5; 31, 61/3, 37/3, 7;...
-%!                                   7, 37/3, 61/3, 31; 12.5, 24.5, 40.5, 60.5], 20*eps)
-%!assert (movvar (magic (4), 3, 0, 2), [98, 61, 37, 50; 18, 31/3, 7/3, 2; ...
-%!                                   2, 7/3, 31/3, 18; 50, 37, 61, 98], 20*eps)
+%!assert (movvar (magic (4), 3, 0),
+%!        [60.5, 40.5, 24.5, 12.5; 31, 61/3, 37/3, 7; ...
+%!         7, 37/3, 61/3, 31; 12.5, 24.5, 40.5, 60.5], 20*eps)
+%!assert (movvar (magic (4), 3, 0, 1),
+%!        [60.5, 40.5, 24.5, 12.5; 31, 61/3, 37/3, 7; ...
+%!         7, 37/3, 61/3, 31; 12.5, 24.5, 40.5, 60.5], 20*eps)
+%!assert (movvar (magic (4), 3, 0, 2),
+%!        [98, 61, 37, 50; 18, 31/3, 7/3, 2; ...
+%!         2, 7/3, 31/3, 18; 50, 37, 61, 98], 20*eps)
 %!assert <*65928> (movvar (magic (4), 3, 0, 3), zeros (4, 4))
 
 %!assert <*55241> (movvar ((1:10).', 3), [0.5; ones(8,1); 0.5], eps)
@@ -160,4 +163,3 @@ endfunction
 %!error <OPT must be 0 or 1> movvar (1:10, 3, [1, 3])
 %!error <OPT must be 0 or 1> movvar (1:10, 3, [3, 0])
 %!error <OPT must be 0 or 1> movvar (1:10, 3, [3, 1])
-

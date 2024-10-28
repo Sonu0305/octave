@@ -99,7 +99,7 @@ function z = iqr (x, dim)
       sz(dim) = 1;
       z = NaN (sz);
     endif
-    return
+    return;
   endif
 
   else
@@ -114,7 +114,7 @@ function z = iqr (x, dim)
           ## Handle empty x with input vecdim.
           sz(dim(dim <= nd)) = 1;
           z = NaN (sz);
-          return
+          return;
         endif
 
         ## Detect trivial case of DIM being all dimensions (same as "all").
@@ -169,7 +169,7 @@ function z = iqr (x, dim)
         ## Handle empty x with scalar input dim.
         sz(dim(dim <= nd)) = 1;
         z = NaN (sz);
-        return
+        return;
       endif
 
     elseif (strcmp (lower (dim), "all"))
@@ -181,7 +181,7 @@ function z = iqr (x, dim)
       if (empty_x)
         ## Handle empty x with "all" dim input.
         z = NaN;
-        return
+        return;
       endif
 
     else

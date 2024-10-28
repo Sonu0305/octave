@@ -92,7 +92,7 @@ Summary of important user-visible changes for version 10 (yyyy-mm-dd):
   
 - `movfun` and `movslice`: Functions now accept `wlen` equal to 1 or [0,0],
   non-integer values of `wlen`, and values of `wlen` that create window lengths
-  exceeding the size of the target array. `movfun` also accepts values of `dim`
+  exceeding the size of the target array.  `movfun` also accepts values of `dim`
   larger than the number of non-singleton dimensions in the target array.  The
   `SamplePoints` option has been implemented for both functions.  Non-numeric
   input array handling has been improved.  These changes affect all moving

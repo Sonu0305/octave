@@ -32,7 +32,7 @@
 ## @var{x}.
 ##
 ## The moving window length input @var{wlen} can either be a numeric scalar
-## or a 2-element numeric array @w{@qcode{[@var{nb}, @var{na}]}}. The elements
+## or a 2-element numeric array @w{@qcode{[@var{nb}, @var{na}]}}.  The elements
 ## included in the moving window depend on the size and value of @var{wlen}
 ## as well as whether the @qcode{"SamplePoints"} option has been specified.
 ## For full details of element inclusion,
@@ -152,7 +152,7 @@
 ## @item @qcode{"nanval"}
 ## Specifies the value to return when @qcode{"nancond"} is set to
 ## @qcode{"omitnan"} or @qcode{"omitmissing"} and all elements in a window
-## are @code{NaN} or @code{NA}. @qcode{"nanval"} must be a numeric scalar
+## are @code{NaN} or @code{NA}.  @qcode{"nanval"} must be a numeric scalar
 ## value or @code{NaN} (default).
 ##
 ## @item @qcode{"outdim"}
@@ -185,13 +185,13 @@
 
 function y = movfun (fcn, x, wlen, varargin)
 
-## FIXME:  Samplepoints, omitnan, and some EndPoints options create unequally
-##         sized windows/slices that don't vectorize easily, and preprocessing
-##         to enable some vectorization in blocks and reduce looping is
-##         expensive.  This function could see significant performance gains
-##         from placing certain routines into an oct file, especially sections
-##         dealing with omitnan that will be only entered for specific, known
-##         floatig point object types.
+  ## FIXME: "Samplepoints", "omitnan", and some "EndPoints" options create
+  ## unequally sized windows/slices that don't vectorize easily, and
+  ## preprocessing to enable some vectorization in blocks and reduce looping is
+  ## expensive.  This function could see significant performance gains from
+  ## placing certain routines into a .oct file, especially sections dealing
+  ## with "omitnan" that will be only entered for specific, known floating
+  ## point object types.
 
   if (nargin < 3)
     print_usage ();
@@ -236,32 +236,27 @@ function y = movfun (fcn, x, wlen, varargin)
       switch (lower (prop))
         case "dim"
           dim = varargin{++vargidx};
-          if ! (isempty (dim) ||
-               ((isnumeric (dim) && isscalar (dim) && isindex (dim))))
-            error ("movfun: DIM must be a positive integer-valued scalar");
+          if (! (isempty (dim)
+                 || (isnumeric (dim) && isscalar (dim) && isindex (dim))))
+            error ("movfun: DIM must be a positive integer");
           endif
 
         case "endpoints"
           bc = varargin{++vargidx};
 
-          if (! ((isnumeric (bc) && isscalar (bc)) ||
-                  (ischar (bc) && isrow (bc) &&
-                    any (strcmpi (bc, valid_bc))) ||
-                  (isscalar (bc) && strcmp (class (x), class (bc)))))
-            error (["movfun: ENDPOINTS must be a numeric scalar, ", ...
-                    "a scalar the same class as X, ", ...
-                    "or a valid Endpoint method"]);
+          if (! (isnumeric (bc) && isscalar (bc)
+                 || (ischar (bc) && isrow (bc) && any (strcmpi (bc, valid_bc)))
+                 || (isscalar (bc) && strcmp (class (x), class (bc)))))
+            error ("movfun: ENDPOINTS must be a numeric scalar, a scalar the same class as X, or a valid Endpoint method");
           endif
 
         case "nancond"
           nancond = varargin{++vargidx};
           if (! (ischar (nancond) && isrow (nancond)
-              && (any (strcmpi (lower (nancond), valid_nancond)))))
-            error (["movfun: NANCOND must be includenan, includemissing,", ...
-                    " omitnan, or omitmissing"]);
+                 && (any (strcmpi (nancond, valid_nancond)))))
+            error ("movfun: NANCOND must be 'includenan', 'includemissing', 'omitnan', or 'omitmissing'");
           endif
-          omitnan = any (strcmpi (
-                               lower (nancond), {"omitnan", "omitmissing"}));
+          omitnan = any (strcmpi (nancond, {"omitnan", "omitmissing"}));
 
         case "nanval"
           nanval = varargin{++vargidx};
@@ -271,10 +266,8 @@ function y = movfun (fcn, x, wlen, varargin)
 
         case "outdim"
           outdim = varargin{++vargidx};
-          if (! (isnumeric (outdim) && isvector (outdim)
-                  && isindex (outdim)))
-            error (["movfun: OUTDIM must be a numeric, positive, ", ...
-                    "integer-valued scalar or vector"]);
+          if (! (isnumeric (outdim) && isvector (outdim) && isindex (outdim)))
+            error ("movfun: OUTDIM must be a numeric, positive, integer-valued scalar or vector");
           endif
 
         case "samplepoints"
@@ -282,12 +275,13 @@ function y = movfun (fcn, x, wlen, varargin)
           if (! (isnumeric (sp.samplepoints) && isvector (sp.samplepoints)
                  && issorted (sp.samplepoints)
                  && all (diff (sp.samplepoints) != 0)))
-            error (["movfun: SAMPLEPOINTS must be a sorted, ", ...
-                    "non-repeating, numeric vector"]);
+            error ("movfun: SAMPLEPOINTS must be a sorted, non-repeating, numeric vector");
           endif
           sp.samplepoints = sp.samplepoints(:);
+
         otherwise
           error ("movfun: unknown PROPERTY '%s'", prop);
+
       endswitch
 
       vargidx++;
@@ -305,9 +299,8 @@ function y = movfun (fcn, x, wlen, varargin)
       try
        y = cast (zeros (size (x)), clsx);
       catch err
-        test_err_msg = ["cast: type conversion to '", clsx, ...
-                        "' is not supported"];
-        if (strcmp (err.message, test_err_msg))
+        err_msg = ["cast: type conversion to '", clsx, "' is not supported"];
+        if (strcmp (err.message, err_msg))
           y = zeros (size (x));
         else
           rethrow (err);
@@ -315,7 +308,7 @@ function y = movfun (fcn, x, wlen, varargin)
       end_try_catch
     endif
 
-    return
+    return;
 
   endif
 
@@ -341,8 +334,7 @@ function y = movfun (fcn, x, wlen, varargin)
 
   if (sp.apply)
     if (numel (sp.samplepoints) != N)
-      error (["movfun: SamplePoints must be the same size as x in ", ...
-             "operating dimension"]);
+      error ("movfun: SamplePoints must be the same size as x in operating dimension");
     endif
 
     sp.spacing = diff (sp.samplepoints, 1, 1);
@@ -360,8 +352,7 @@ function y = movfun (fcn, x, wlen, varargin)
     endif
 
     if (! sp.uniform && ! strcmpi (bc, "shrink"))
-      error (["movfun: when SamplePoints are not uniformly spaced the ", ...
-              "only valid EndPoints option is 'shrink'"]);
+      error ("movfun: when SamplePoints are not uniformly spaced the only valid EndPoints option is 'shrink'");
     endif
   endif
 
@@ -377,15 +368,15 @@ function y = movfun (fcn, x, wlen, varargin)
     [slc, C, Cpre, Cpos, win, wlen, sp.scalar_wlen] = ...
                                        movslice (N, wlen, sp.samplepoints);
     ## Note that for non-standard sp, slc points already adjusted for
-    ## scalar_wlen. win is always inclusive showing full window extents.
+    ## scalar_wlen.  win is always inclusive showing full window extents.
   endif
 
-  ## Move the desired dim to be the dim 1 (always operate on columns).
-  nd    = length (szx);                   # number of dimensions
-  dperm = [dim, 1:(dim-1), (dim+1) : nd]; # permutation of dimensions
-  x     = permute (x, dperm);             # permute dims to first dimension
-  ncols = prod (szx(dperm(2:end)));       # other dimensions as single column
-  x     = reshape (x, N, ncols);          # reshape input
+  ## Move the desired DIM to dim 1 (fcn operates on 1st non-singleton dim)
+  nd    = length (szx);                 # number of dimensions
+  dperm = [dim, 1:(dim-1), (dim+1):nd]; # permutation of dimensions
+  x     = permute (x, dperm);           # permute dims to first dimension
+  ncols = prod (szx(dperm(2:end)));     # other dimensions as single column
+  x     = reshape (x, N, ncols);        # reshape input
 
   ## Obtain function for boundary conditions.
   if (isnumeric (bc) || (isscalar (bc) && strcmp (class (bc), class (x))))
@@ -408,7 +399,7 @@ function y = movfun (fcn, x, wlen, varargin)
           slc(:, [Cpre, Cpos]) = [];
           if (isempty (C))
             y = NaN (1, 0);
-            return
+            return;
           else
             slc = slc(1,C) + (0: diff (slc(:, C(1)), 1, 1)).';
           endif
@@ -474,7 +465,8 @@ function y = movfun (fcn, x, wlen, varargin)
   ## Apply processing to each column.
   parfor i = 1:ncols
     y(:,i,:) = movfun_oncol (fcn_, yclass, x(:,i), wlen, bcfcn, ...
-                     slc, C, Cpre, Cpos, win, soutdim, sp, omitnan, nanval);
+                             slc, C, Cpre, Cpos, win, soutdim, sp, ...
+                             omitnan, nanval);
   endparfor
 
   ## Restore shape
@@ -488,24 +480,25 @@ endfunction
 
 
 function y = movfun_oncol (fcn, yclass, x, wlen, bcfcn, slcidx, C, Cpre,
-                        Cpos, win, odim, sp, omitnan, nanval)
+                           Cpos, win, odim, sp, omitnan, nanval)
 
   nan_x = isnan (x);
-  any_nans = any (nan_x);
-  nan_x_idx = find (nan_x);
-
   if (all (nan_x))
     ## Shortcut path if all NaN and nothing to do.
     if (! omitnan || isnan (nanval))
-      ## includenan always returns NaN for all-NaN window. omitnan will return
+      ## includenan always returns NaN for all-NaN window.  omitnan will return
       ## nanval in same case.
-      y = NaN (length (x), odim, yclass); # isnan true -> yclass is a float
+      y = NaN (length (x), odim, yclass);  # isnan true -> yclass is a float
     else
       y = nanval(ones (length (x), odim));
     endif
-    return
-  elseif (! any_nans)
-    ## If no NaNs, turn off slower NaN handling path for this column.
+    return;
+  endif
+
+  any_nans = any (nan_x);
+  nan_x_idx = find (nan_x);
+  if (! any_nans)
+    ## If no NaNs, turn off slower NaN handling path for this data.
     omitnan = false;
   endif
 
@@ -520,10 +513,10 @@ function y = movfun_oncol (fcn, yclass, x, wlen, bcfcn, slcidx, C, Cpre,
   ## processing with arrayfun.  This may be slow, but it avoids needing to
   ## place other restrictions on fcn.  Hopefully most functions will handle
   ## as trivial or at least with low-computational overhead for N = 1.
-  ## FIXME:  This could be sidestepped for most internal functions by
-  ##         specifying the operating dimension.  E.g., sum (x(slcidx), 2).
-  ##         That would require establishing separate code paths for built-in
-  ##         and general movfun calls.
+  ## FIXME: This could be sidestepped for most internal functions by
+  ##        specifying the operating dimension.  E.g., sum (x(slcidx), 2).
+  ##        That would require establishing separate code paths for built-in
+  ##        and general movfun calls.
 
   if (! isempty (C))
     N = length ([Cpre, C, Cpos]);
@@ -539,7 +532,7 @@ function y = movfun_oncol (fcn, yclass, x, wlen, bcfcn, slcidx, C, Cpre,
 
     if (! omitnan)
       ## With includenan any slice with a NaN returns NaN whether or not fcn
-      ## handles NaN differently. Handle those before passing to other
+      ## handles NaN differently.  Handle those before passing to other
       ## subfunctions.
 
       if (! sp.apply)
@@ -620,7 +613,7 @@ function y = movfun_oncol (fcn, yclass, x, wlen, bcfcn, slcidx, C, Cpre,
           ## Then process no-nan columns as a block.
           if (any (no_nan))
               y(C(no_nan),:) = yeval_safe (y(C(no_nan),:), fcn, x,
-                                             slcidx(:, no_nan));
+                                           slcidx(:, no_nan));
           endif
 
           ## Step through remaining columns with some NaNs creating unequal
@@ -630,8 +623,8 @@ function y = movfun_oncol (fcn, yclass, x, wlen, bcfcn, slcidx, C, Cpre,
           if (any (has_nan))
 
             nan_locs = nan_x(slcidx(:, has_nan));
-            [elem_cnt_grp_idx, unq_cnts] = form_idx_groups (
-                                                        sum (! nan_locs, 1));
+            [elem_cnt_grp_idx, unq_cnts] = ...
+                                         form_idx_groups (sum (! nan_locs, 1));
 
             for ii = 1 : rows (elem_cnt_grp_idx)
               cols_in_group = elem_cnt_grp_idx(ii,:);
@@ -657,7 +650,7 @@ function y = movfun_oncol (fcn, yclass, x, wlen, bcfcn, slcidx, C, Cpre,
       endif
     endif
 
-  else # empty C
+  else  # empty C
     ## Large windows may create Cpre/Cpos overlap and empty C.
     N = length (unique_endpoints (Cpre, Cpos));
     try
@@ -673,18 +666,18 @@ function y = movfun_oncol (fcn, yclass, x, wlen, bcfcn, slcidx, C, Cpre,
   ## Process boundaries
   if (! (isempty ([Cpre, Cpos])))
     if (! omitnan && any_nans)
-      ## With includenan any Nan-containing windows return nan.
+      ## With includenan any NaN-containing windows return NaN.
 
       if (sp.apply)
-        ## slcidx form for sp contains enough info to direcly find
+        ## slcidx form for sp contains enough info to directly find
         ## NaN-containing slices.
         ## Handle pre and pos separately because there could be overlap.
 
-        nan_Cpre = any ((slcidx(1,Cpre) <= nan_x_idx) &
-                            (slcidx(2,Cpre) >= nan_x_idx), 1);
+        nan_Cpre = any ((slcidx(1,Cpre) <= nan_x_idx)
+                        & (slcidx(2,Cpre) >= nan_x_idx), 1);
 
-        nan_Cpos = any ((slcidx(1,Cpos) <= nan_x_idx) &
-                            (slcidx(2,Cpos) >= nan_x_idx), 1);
+        nan_Cpos = any ((slcidx(1,Cpos) <= nan_x_idx)
+                        & (slcidx(2,Cpos) >= nan_x_idx), 1);
 
       else
         ## Expand slcidx from win.
@@ -708,15 +701,15 @@ function y = movfun_oncol (fcn, yclass, x, wlen, bcfcn, slcidx, C, Cpre,
     if (! (isempty ([Cpre,Cpos]))) # Recheck after possible trimming.
       Cbc = unique_endpoints (Cpre, Cpos);
       y(Cbc,:) = bcfcn (fcn, x, Cpre, Cpos, win, wlen, odim,
-                          slcidx, sp, omitnan, nanval, nan_x);
+                        slcidx, sp, omitnan, nanval, nan_x);
     endif
   endif
 
 endfunction
 
 
-## Process uniform index block removing nan elements, idx is in 2 row
-## samplepoints form trimmed to C columns
+## Process uniform index block removing nan elements, idx is in 2-row
+## samplepoints form trimmed to C columns.
 function y = proc_uniform_block_omitnan (y, fcn, x, nan_x, nanval, slcidx)
 
   ## expand slice index.
@@ -744,7 +737,7 @@ function y = proc_uniform_block_omitnan (y, fcn, x, nan_x, nanval, slcidx)
   endif
 
   ## Step through remaining columns with some NaNs creating unequal
-  ## element-count columns. Use similar approach as for samplepoints
+  ## element-count columns.  Use similar approach as for samplepoints
   ## to group into equal element-count blocks.
 
   has_nan &= ! all_nan;
@@ -762,29 +755,29 @@ function y = proc_uniform_block_omitnan (y, fcn, x, nan_x, nanval, slcidx)
       slc_grp = reshape (slc_grp, unq_cnts(ii), []);
 
       y(y_idx,:) = yeval_safe (y(y_idx,:), fcn, x, slc_grp);
-
-      endfor
+    endfor
   endif
+
 endfunction
 
 
 ## Utility function to take a row vector of whole numbers and split them
-## into groups that can be used for block processing. Will return a logical
-## array. Each row corresponds to one a (sorted ascending) value in the input
+## into groups that can be used for block processing.  Will return a logical
+## array.  Each row corresponds to one a (sorted ascending) value in the input
 ## vector and the column indexes identify the location of the members of that
-## group. Optional return is a row vector with the sorted unique values of
+## group.  Optional return is a row vector with the sorted unique values of
 ## the input vector.  (Avoids overhead of calling unique.)
 function [v_grp_idx, unq_v] = form_idx_groups (v)
-  v_srt = sort (v); # Sorted counts to build groups
-  unq_v_idx = logical ([1, diff(v_srt)]); # Location of first of each value
-  unq_v = v_srt(unq_v_idx); # List of unique elements, sorted
-  v_grp_idx = v == unq_v.'; # Logical group index by row
+  v_srt = sort (v);          # Sorted counts to build groups
+  unq_v_idx = logical ([1, diff(v_srt)]);  # Location of first of each value
+  unq_v = v_srt(unq_v_idx);  # List of unique elements, sorted
+  v_grp_idx = v == unq_v.';  # Logical group index by row
 endfunction
 
 
 ## Utility function with try-catch on y = fcn(x(slc)) to catch possible
-## memory overflow on type conversion or broadcast expansion. if caught,
-## divide into blocks then reprocess. If 5th input "counts" is passed, it
+## memory overflow on type conversion or broadcast expansion.  If caught,
+## divide into blocks then reprocess.  If 5th input "counts" is passed, it
 ## expects slc to be a row vecor of first elements in the full slc array, and
 ## performs the slc expansion with "counts" elements inside try-catch block.
 ## Both paths check for the full slc to be a row vector and if so passes the
@@ -811,12 +804,12 @@ function y = yeval_safe (y, fcn, x, slc, counts);
       if (isrow (slc))
         for ii = 1 : N_SLICES-1
           y(idx(ii):idx(ii + 1), :) = ...
-                arrayfun (fcn, x(slc(:, idx(ii):idx(ii + 1))));
+                                 arrayfun (fcn, x(slc(:, idx(ii):idx(ii + 1))));
         endfor
       else
         for ii = 1 : N_SLICES-1
           y(idx(ii):idx(ii + 1), :) = ...
-                        fcn (x(slc(:, idx(ii):idx(ii + 1))));
+                                 fcn (x(slc(:, idx(ii):idx(ii + 1))));
         endfor
       endif
 
@@ -854,13 +847,14 @@ function y = yeval_safe (y, fcn, x, slc, counts);
       endif
     end_try_catch
   endif
+
 endfunction
 
 
 ## Apply "shrink" boundary conditions
 ## Function is not applied to any window elements outside the original data.
 function y = shrink_bc (fcn, x, Cpre, Cpos, win, ~, odim, idx, sp,
-                          omitnan, nanval, nan_x);
+                        omitnan, nanval, nan_x);
   Cp_unique = unique_endpoints (Cpre, Cpos);
   N = length (x);
   n = length (Cp_unique);
@@ -917,9 +911,10 @@ function y = shrink_bc (fcn, x, Cpre, Cpos, win, ~, odim, idx, sp,
       elem_cnt_grp_idx = form_idx_groups (diff (idx(:, Cp_unique), 1, 1));
       for ii = 1 : rows (elem_cnt_grp_idx)
         col_grp_idx = elem_cnt_grp_idx(ii,:);
-        y(col_grp_idx,:) = proc_uniform_block_omitnan (y(col_grp_idx,:),
-                                            fcn, x, nan_x, nanval,
-                                            idx(:, Cp_unique(col_grp_idx)));
+        y(col_grp_idx,:) = ...
+                 proc_uniform_block_omitnan (y(col_grp_idx,:),
+                                             fcn, x, nan_x, nanval,
+                                             idx(:, Cp_unique(col_grp_idx)));
       endfor
 
     else
@@ -941,13 +936,14 @@ function y = shrink_bc (fcn, x, Cpre, Cpos, win, ~, odim, idx, sp,
 
     endif
   endif
+
 endfunction
 
 
 ## Apply replacement value boundary conditions
 ## Window is padded at beginning and end with user-specified value.
 function y = replaceval_bc (fcn, x, Cpre, Cpos, win, wlen, odim, idx,
-                             sp, omitnan, nanval, nan_x)
+                            sp, omitnan, nanval, nan_x)
 
   persistent substitute;
 
@@ -1017,6 +1013,7 @@ function y = replaceval_bc (fcn, x, Cpre, Cpos, win, wlen, odim, idx,
     y = proc_uniform_block_omitnan (zeros (columns (idx), odim), fcn, x,
                                     nan_x, nanval, idx([1,end],:));
   endif
+
 endfunction
 
 
@@ -1024,7 +1021,7 @@ endfunction
 ## 'y' values outside window are replaced by value of 'x' at the window
 ## boundary.
 function y = same_bc (fcn, x, Cpre, Cpos, win, wlen, odim, idx, sp,
-                        omitnan, nanval, nan_x)
+                      omitnan, nanval, nan_x)
 
   N = length (x);
 
@@ -1039,7 +1036,7 @@ function y = same_bc (fcn, x, Cpre, Cpos, win, wlen, odim, idx, sp,
     sz_post = numel (pts_post) - 1 - (sp.scalar_wlen && exclude_endpoint);
 
     idx(2, Cpos) += sz_post - (numel (Cpos) - 1 : -1 : 0);
-    idx = double (idx(:, unique_endpoints (Cpre, Cpos))); ## Allow neg values
+    idx = double (idx(:, unique_endpoints (Cpre, Cpos)));  # Allow neg values
     idx(1, Cpre) -= sz_pre - (0 : numel (Cpre) - 1);
 
     elems = diff (idx(:, 1), 1, 1);
@@ -1063,7 +1060,7 @@ function y = same_bc (fcn, x, Cpre, Cpos, win, wlen, odim, idx, sp,
 
     idx = idx + npre;
     y = proc_uniform_block_omitnan (zeros (columns (idx), odim), fcn, x,
-                                      nan_x, nanval, idx([1,end],:));
+                                    nan_x, nanval, idx([1,end],:));
   endif
 
 endfunction
@@ -1073,7 +1070,7 @@ endfunction
 ## Window wraps around.  Window values outside data array are replaced with
 ## data from the other end of the array.
 function y = periodic_bc (fcn, x, Cpre, Cpos, win, wlen, odim, idx, sp,
-                           omitnan, nanval, nan_x)
+                          omitnan, nanval, nan_x)
 
   N = length (x);
 
@@ -1126,7 +1123,7 @@ function y = periodic_bc (fcn, x, Cpre, Cpos, win, wlen, odim, idx, sp,
 
     idx = idx + npre;
     y = proc_uniform_block_omitnan (zeros (columns (idx), odim), fcn, x,
-                                      nan_x, nanval, idx([1,end],:));
+                                    nan_x, nanval, idx([1,end],:));
   endif
 
 
@@ -1134,7 +1131,7 @@ endfunction
 
 
 ## Faster unique routine to remove potential overlapping endpoint indices.
-## Assumes a and b are vectors of valid, sorted linear indices. Either may be
+## Assumes a and b are vectors of valid, sorted linear indices.  Either may be
 ## empty.  a will have the form [1:M], b will have the form [N:P].  M must be
 ## no larger than P, and N must be no smaller than 1.
 function c = unique_endpoints (a, b)
@@ -1623,7 +1620,7 @@ endfunction
 
 ## Standard calls - includenan.  Any NaN in window should return NaN even if
 ## fcn would return a value.  Note that unlike others, movmin and movmax will
-## default to 'omitnan'. movfun defaults to 'includenan' for all fcn unless
+## default to 'omitnan'.  movfun defaults to 'includenan' for all fcn unless
 ## otherwise specified.
 %!assert <66156> (movfun (@min, [1:4, NaN(1,5), 10], 3), [1, 1, 2, NaN(1, 7)])
 %!assert <66156> (movfun (@min, [1:4, NaN(1,5), 10], 3, "nancond", "includenan"), [1, 1, 2, NaN(1, 7)])
@@ -1767,11 +1764,7 @@ endfunction
 %!error <when SamplePoints are not uniformly spaced> movfun (@sum, 1:5, 3, "SamplePoints", [1:4, 4.5], "EndPoints", 2)
 %!error <SamplePoints must be the same size as x> movfun (@sum, 1:5, 3, "SamplePoints", 1:4)
 %!error <SamplePoints must be the same size as x> movfun (@sum, magic (4), 3, "dim", 2, "SamplePoints", [1, 2])
-##%!warning <"omitnan" is not yet implemented>
-##%! movfun (@min, 1:3, 3, "nancond", "omitnan")
-##%!warning <"omitnan" is not yet implemented>
-##%! movfun (@min, 1:3, 3, "nancond", "omitmissing")
-%!error movfun (@min, 1:3, "nancond", "omitnan")
+%!error <WLEN must be numeric> movfun (@min, 1:3, "nancond", "omitnan")
 ## FIXME: This test is commented out until OUTDIM validation is clarified.
 %!#error <OUTDIM \(5\) is larger than largest available dimension \(3\)>
 %! movfun (@min, ones (6,3,4), 3, "outdim", 5)

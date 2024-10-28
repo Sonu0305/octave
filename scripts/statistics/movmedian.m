@@ -77,18 +77,21 @@ function y = movmedian (x, wlen, varargin)
 
 endfunction
 
+
 %!assert (movmedian (1:5, 3), [1.5, 2, 3, 4, 4.5], eps)
 %!assert (movmedian (1:5, [1, 1]), [1.5, 2, 3, 4, 4.5], eps)
 %!assert (movmedian (1:5, 3, 2), [1.5, 2, 3, 4, 4.5], eps)
 %!assert <*65928> (movmedian (1:5, 3, 1), 1:5)
 %!assert <*65928> (movmedian (1:5, 3, 3), 1:5)
 
-%!assert (movmedian (magic (4), 3), [10.5, 6.5, 6.5, 10.5; 9, 7, 6, 12; ...
-%!                                5, 11, 10, 8; 6.5, 10.5, 10.5, 6.5], eps)
-%!assert (movmedian (magic (4), 3, 1), [10.5, 6.5, 6.5, 10.5; 9, 7, 6, 12; ...
-%!                                5, 11, 10, 8; 6.5, 10.5, 10.5, 6.5], eps)
-%!assert (movmedian (magic (4), 3, 2), [9, 3, 3, 8; 8, 10, 10, 9; ...
-%!                                    8, 7, 7, 9; 9, 14, 14, 8])
+%!assert (movmedian (magic (4), 3),
+%!        [10.5, 6.5, 6.5, 10.5; 9, 7, 6, 12; ...
+%!         5, 11, 10, 8; 6.5, 10.5, 10.5, 6.5], eps)
+%!assert (movmedian (magic (4), 3, 1),
+%!        [10.5, 6.5, 6.5, 10.5; 9, 7, 6, 12; ...
+%!         5, 11, 10, 8; 6.5, 10.5, 10.5, 6.5], eps)
+%!assert (movmedian (magic (4), 3, 2),
+%!        [9, 3, 3, 8; 8, 10, 10, 9; 8, 7, 7, 9; 9, 14, 14, 8])
 %!assert <*65928> (movmedian (magic (4), 3, 3), magic (4))
 
 %!assert <*55241> (movmedian ((1:10).', 3), [1.5; (2:9).'; 9.5], eps)
@@ -96,7 +99,6 @@ endfunction
 %!assert <66156> (movmedian ([1:4, NaN(1,3), 8:10], 3), movmedian ([1:4, NaN(1,3), 8:10], 3, "includenan"))
 %!assert <66156> (movmedian ([1:4, NaN(1,3), 8:10], 3, "includenan"), [1.5, 2, 3, NaN(1,5), 9, 9.5], eps)
 %!assert <66156> (movmedian ([1:4, NaN(1,3), 8:10], 3, "omitnan"), [1.5, 2, 3, 3.5, 4, NaN, 8, 8.5, 9, 9.5], eps)
-
 
 ## Test input validation
 %!error <Invalid call> movmedian ()

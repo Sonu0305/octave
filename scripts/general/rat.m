@@ -128,7 +128,7 @@ function [n, d] = rat (x, tol)
       finish = repmat (")",         nn, 1);
       n = [start, realstr, mid, imagstr, finish];
     endif
-    return
+    return;
   endif
 
   y = x(:);

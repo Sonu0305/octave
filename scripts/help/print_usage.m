@@ -194,7 +194,7 @@ function [retval, status] = __makeinfo_restricted__ (buffer)
     ## There is some Texinfo command in the deftypefn line
     ## outside the scope of this restricted function,
     ## so return with status set to failure.
-    return
+    return;
   endif
 
   ## Process any remaining @ signs.
