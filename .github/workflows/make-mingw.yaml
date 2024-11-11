@@ -21,7 +21,7 @@ jobs:
       matrix:
         # For available GitHub-hosted runners, see: https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners
         os: [windows-latest]
-        msystem: [MINGW64]
+        msystem: [MINGW64, CLANG64]
         include:
           - msystem: MINGW64
             mingw-prefix: mingw64
@@ -32,6 +32,19 @@ jobs:
             extra-config-flags: ""
             ccache-max: 0.9G
             allow-error: false
+          - msystem: CLANG64
+            mingw-prefix: clang64
+            target-prefix: mingw-w64-clang-x86_64
+            cc: clang
+            # It looks like we and graphicsmagick++ aren't ready for C++17 yet.
+            cxx: "clang++ -std=gnu++14"
+            f77: flang
+            # Clang seems to require a different set of dllexport attributes than GCC.
+            extra-config-flags:
+              --disable-lib-visibility-flags
+            ccache-max: 400M
+            # This configuration is not fully supported yet
+            allow-error: true
 
     env:
       CHERE_INVOKING: 1
@@ -166,6 +179,7 @@ jobs:
           mkdir .build
           cd .build && ../configure \
             JAVA_HOME="" \
+            --enable-relocate-all \
             --disable-docs \
             ${{ matrix.extra-config-flags }}
 
@@ -255,6 +269,30 @@ jobs:
           cd examples/code
           mkoctfile --link-stand-alone embedded.cc -o embedded
           ./embedded.exe
+
+      - name: test Octave packages
+        continue-on-error: ${{ matrix.allow-error }}
+        env:
+          # colon separated list of packages
+          PACKAGE_NAMES: "control:stk"
+        run: |
+          unset CC
+          unset CXX
+          export PATH=$(echo "$PATH" | sed -e "s|$MINGW_PREFIX/lib/ccache/bin:||g")
+          export PATH="/c/octave/pkg/${{ matrix.mingw-prefix }}/bin:$PATH"
+          IFS=':' read -r -a packages <<< "${PACKAGE_NAMES}"
+          for package in "${packages[@]}"; do
+            printf "   \033[0;32m==>\033[0m Octave package \033[0;32m${package}\033[0m\n"
+            echo "::group::Install ${package}"
+            octave --eval "pkg install -verbose -forge ${package}"
+            echo "::endgroup::"
+            echo "::group::Test ${package}"
+            octave --eval "pkg test ${package}"
+            echo "::endgroup::"
+            echo "::group::Test log for ${package}"
+            cat ${GITHUB_WORKSPACE}/fntests.log
+            echo "::endgroup::"
+           done
 
       - name: analyze test suite results
         # Make sure the test summary lists 0 "FAIL"s and no "REGRESSION"

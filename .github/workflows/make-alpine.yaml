@@ -243,6 +243,27 @@ jobs:
           mkoctfile --link-stand-alone embedded.cc -o embedded
           LD_LIBRARY_PATH="/usr/local/lib/octave/$(octave --eval "disp(version())")" ./embedded
 
+      - name: test Octave packages
+        env:
+          # colon separated list of packages
+          PACKAGE_NAMES: "control:stk"
+        run: |
+          unset CC
+          unset CXX
+          IFS=:
+          for package in "${PACKAGE_NAMES}"; do
+            printf "   \033[0;32m==>\033[0m Octave package \033[0;32m${package}\033[0m\n"
+            echo "::group::Install ${package}"
+            octave --eval "pkg install -verbose -forge ${package}"
+            echo "::endgroup::"
+            echo "::group::Test ${package}"
+            octave --eval "pkg test ${package}"
+            echo "::endgroup::"
+            echo "::group::Test log for ${package}"
+            cat ${GITHUB_WORKSPACE}/fntests.log
+            echo "::endgroup::"
+           done
+
       - name: analyze test suite results
         # Make sure the test summary lists 0 "FAIL"s and no "REGRESSION"
         run:  |
