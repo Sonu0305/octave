@@ -2205,7 +2205,7 @@ yyerror (octave::base_parser& parser, const char *s)
 
 OCTAVE_BEGIN_NAMESPACE(octave)
 
-class parse_exception : public std::runtime_error
+class OCTINTERP_EXCEPTION_API parse_exception : public std::runtime_error
 {
 public:
 

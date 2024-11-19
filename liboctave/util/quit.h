@@ -182,7 +182,7 @@ private:
   bool m_safe_to_return;
 };
 
-class interrupt_exception : public std::exception
+class OCTAVE_EXCEPTION_API interrupt_exception : public std::exception
 {
 public:
 
