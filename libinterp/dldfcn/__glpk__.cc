@@ -88,6 +88,7 @@ glpk (int sense, int n, int m, double *c, int nz, int *rn, int *cn,
 {
   int typx = 0;
   int errnum = 0;
+  int tout = 0;  // to save and restore msglev settings
 
   time = 0.0;
   status = -1;    // Initialize status to "bad" value
@@ -173,12 +174,22 @@ glpk (int sense, int n, int m, double *c, int nz, int *rn, int *cn,
 
   glp_load_matrix (lp, nz, rn, cn, a);
 
+  // sort the constraints for better presolving analogue to the code
+  // sample provided by glpk
+  glp_sort_matrix (lp);
+
   if (save_pb)
     {
       static char tmp[] = "outpb.lp";
       if (glp_write_lp (lp, nullptr, tmp) != 0)
         error ("__glpk__: unable to write problem");
     }
+
+  // direct calling glp_subroutines requires explicit msglev setting
+  if (par.msglev < 3)
+    tout = glp_term_out (GLP_OFF);
+  else
+    tout = glp_term_out (GLP_ON);
 
   // scale the problem data
   if (! par.presol || lpsolver != 1)
@@ -187,6 +198,8 @@ glpk (int sense, int n, int m, double *c, int nz, int *rn, int *cn,
   // build advanced initial basis (if required)
   if (lpsolver == 1 && ! par.presol)
     glp_adv_basis (lp, 0);
+
+  glp_term_out (tout);  // restore previous msglev status
 
   // For MIP problems without a presolver, a first pass with glp_simplex
   // is required
@@ -586,8 +599,8 @@ Undocumented internal function.
   OCTAVE_GLPK_GET_REAL_PARAM ("toldj", par.toldj);
 
   // Relative tolerance used to choose eligible pivotal elements of
-  //  the simplex table in the ratio test
-  par.tolpiv = 1e-10;
+  // the simplex table in the ratio test
+  par.tolpiv = 1e-9;
   OCTAVE_GLPK_GET_REAL_PARAM ("tolpiv", par.tolpiv);
 
   par.objll = -std::numeric_limits<double>::max ();

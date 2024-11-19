@@ -120,7 +120,6 @@ find_files_dialog::find_files_dialog (QWidget *p)
   m_file_list->setSelectionBehavior (QAbstractItemView::SelectRows);
   m_file_list->setSelectionMode (QAbstractItemView::SingleSelection);
   m_file_list->setAlternatingRowColors (true);
-  m_file_list->setToolTip (tr ("Search results"));
   m_file_list->setSortingEnabled (true);
   m_file_list->horizontalHeader ()->restoreState (settings.value (ff_column_state.settings_key ()).toByteArray ());
   m_file_list->horizontalHeader ()->setSortIndicatorShown (true);
@@ -160,7 +159,9 @@ find_files_dialog::find_files_dialog (QWidget *p)
            this, &find_files_dialog::close);
 
   // name options
+  const QString gbox_style_sheet ("QGroupBox { font-weight: bold; } ");
   QGroupBox *name_group = new QGroupBox (tr ("Filename/Location"));
+  name_group->setStyleSheet(gbox_style_sheet);
   QGridLayout *name_layout = new QGridLayout;
   name_group->setLayout (name_layout);
 
@@ -178,6 +179,7 @@ find_files_dialog::find_files_dialog (QWidget *p)
 
   // content options
   QGroupBox *content_group = new QGroupBox (tr ("File contents"));
+  content_group->setStyleSheet(gbox_style_sheet);
   QGridLayout *content_layout = new QGridLayout;
   content_group->setLayout (content_layout);
   content_layout->addWidget (m_contains_text_check, 4, 1);
@@ -185,12 +187,22 @@ find_files_dialog::find_files_dialog (QWidget *p)
   content_layout->setColumnStretch (2, 1);
   content_layout->addWidget (m_content_case_check, 5, 1);
 
+  // results
+  QLabel *results_hint = new QLabel (tr ("Results: Double click opens the file"
+                                         " or sets the directory"));
+  QGroupBox *results_group = new QGroupBox (tr ("Search results"));
+  results_group->setStyleSheet(gbox_style_sheet);
+  QVBoxLayout *results_layout = new QVBoxLayout ();
+  results_group->setLayout (results_layout);
+  results_layout->addWidget (results_hint);
+  results_layout->addWidget (m_file_list);
+
+  // main layout
   QGridLayout *main_layout = new QGridLayout;
-  main_layout->setSizeConstraint (QLayout::SetFixedSize);
   main_layout->addWidget (name_group, 0, 0);
   main_layout->addWidget (content_group, 1, 0);
   main_layout->addWidget (button_box, 0, 1, 3, 1);
-  main_layout->addWidget (m_file_list, 2, 0);
+  main_layout->addWidget (results_group, 2, 0);
   main_layout->setRowStretch (2, 1);
   main_layout->addWidget (m_status_bar, 3, 0, 1, -1);
 

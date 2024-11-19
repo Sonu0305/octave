@@ -168,7 +168,12 @@ jobs:
           echo gfortran --version
           gfortran --version
           mkdir .build
+          echo "::group::Run configure script"
           cd .build && ../configure
+          echo "::endgroup::"
+          echo "::group::Show config.log"
+          cat ./config.log
+          echo "::endgroup::"
 
       - name: build
         # Parallel make seems to fail intermittently when creating the figures

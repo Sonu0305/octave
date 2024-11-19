@@ -40,6 +40,7 @@
 #include <gl2ps.h>
 
 #include "file-ops.h"
+#include "filepos-wrappers.h"
 #include "lo-mappers.h"
 #include "oct-locbuf.h"
 #include "oct-env.h"
@@ -419,7 +420,7 @@ gl2ps_renderer::draw (const graphics_object& go, const std::string& print_cmd)
           m_buffer_overflow = false;
           buffsize *= 2;
 
-          std::fseek (tmpf, 0, SEEK_SET);
+          octave_fseeko_wrapper (tmpf, 0, SEEK_SET);
           octave_ftruncate_wrapper (fileno (tmpf), 0);
 
           // For LaTeX output the print process uses 2 drawnow() commands.
@@ -493,7 +494,7 @@ gl2ps_renderer::draw (const graphics_object& go, const std::string& print_cmd)
         }
 
       // Copy temporary file to pipe
-      std::fseek (tmpf, 0, SEEK_SET);
+      octave_fseeko_wrapper (tmpf, 0, SEEK_SET);
       char str[8192];  // 8 kB is a common kernel buffersize
       std::size_t nread, nwrite;
       nread = 1;

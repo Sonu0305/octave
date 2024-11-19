@@ -176,6 +176,23 @@ find_files_model::data (const QModelIndex& idx, int role) const
               break;
             }
         }
+      else if (role ==  Qt::ToolTipRole)
+        {
+          switch (idx.column ())
+            {
+            case 0:
+              retval = tr ("Double click to open the file");
+              break;
+
+            case 1:
+              retval = tr ("Double click to set the directory");
+              break;
+
+            default:
+              break;
+            }
+        }
+
     }
 
   return retval;

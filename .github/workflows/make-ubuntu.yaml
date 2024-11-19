@@ -109,10 +109,15 @@ jobs:
           echo gfortran --version
           gfortran --version
           mkdir .build
+          echo "::group::Run configure script"
           cd .build && ../configure \
             CPPFLAGS="-I/usr/include/hdf5/serial -I/usr/include/suitesparse" \
             LDFLAGS="-L/usr/lib/$(dpkg-architecture -qDEB_HOST_MULTIARCH)/hdf5/serial" \
             ${{ matrix.extra-config-flags }}
+          echo "::endgroup::"
+          echo "::group::Show config.log"
+          cat ./config.log
+          echo "::endgroup::"
 
       - name: build
         # Parallel make seems to fail intermittently when creating the figures

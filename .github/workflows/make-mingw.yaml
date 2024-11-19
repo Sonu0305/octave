@@ -177,11 +177,16 @@ jobs:
           echo $F77 --version
           $F77 --version
           mkdir .build
+          echo "::group::Run configure script"
           cd .build && ../configure \
             JAVA_HOME="" \
             --enable-relocate-all \
             --disable-docs \
             ${{ matrix.extra-config-flags }}
+          echo "::endgroup::"
+          echo "::group::Show config.log"
+          cat ./config.log
+          echo "::endgroup::"
 
       - name: build
         # Spawning processes seems to have a big overhead on this platform. Use a somewhat larger number of parallel processes to compensate for that.

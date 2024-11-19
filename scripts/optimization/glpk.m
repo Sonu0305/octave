@@ -318,7 +318,7 @@
 ## feasible.  It is not recommended that you change this parameter unless you
 ## have a detailed understanding of its purpose.
 ##
-## @item tolpiv (default: 1e-10)
+## @item tolpiv (default: 1e-9)
 ## Relative tolerance used to choose eligible pivotal elements of the simplex
 ## table.  It is not recommended that you change this parameter unless you have
 ## a detailed understanding of its purpose.

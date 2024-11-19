@@ -58,9 +58,13 @@ class OCTINTERP_TEMPLATE_API octave_base_int_matrix : public octave_base_matrix<
 {
 public:
 
-  octave_base_int_matrix () : octave_base_matrix<T> () { }
+  OCTINTERP_OVERRIDABLE_FUNC_API octave_base_int_matrix ()
+  : octave_base_matrix<T> ()
+  { }
 
-  octave_base_int_matrix (const T& nda) : octave_base_matrix<T> (nda) { }
+  OCTINTERP_OVERRIDABLE_FUNC_API octave_base_int_matrix (const T& nda)
+  : octave_base_matrix<T> (nda)
+  { }
 
   ~octave_base_int_matrix () = default;
 
