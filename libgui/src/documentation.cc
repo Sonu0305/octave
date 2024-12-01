@@ -762,11 +762,13 @@ documentation::filter_update (const QString& expression)
   if (! m_help_engine)
     return;
 
+  QString search_term = expression.trimmed ();
+
   QString wildcard;
   if (expression.contains (QLatin1Char ('*')))
     wildcard = expression;
 
-  m_help_engine->indexWidget ()->filterIndices (expression, wildcard);
+  m_help_engine->indexWidget ()->filterIndices (search_term, wildcard);
 }
 
 void
