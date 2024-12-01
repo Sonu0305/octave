@@ -951,7 +951,7 @@ bp_table::add_breakpoint_in_file (const std::string& file,
     return 0;
 
   std::string fcn_ident;
-  if (info.class_name ().empty ())
+  if (info.class_name ().empty () || info.fcn ()[0] == '@')
     fcn_ident = info.fcn ();
   else
     fcn_ident = "@" + info.class_name () + "/" + info.fcn ();
@@ -973,7 +973,7 @@ bp_table::add_breakpoints_in_file (const std::string& file,
     return bp_lines ();
 
   std::string fcn_ident;
-  if (info.class_name ().empty ())
+  if (info.class_name ().empty () || info.fcn ()[0] == '@')
     fcn_ident = info.fcn ();
   else
     fcn_ident = "@" + info.class_name () + "/" + info.fcn ();
