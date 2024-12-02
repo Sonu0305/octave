@@ -801,21 +801,24 @@ orthogonal basis of @code{span (A)}.
 %! assert (qr (sparse (0, 1)), sparse (0, 1))
 
 %!test <*66488>
-%! ## Orientation of 'p' output
+%! ## Orientation of 'p' output for dense matrices
 %! [q, r, p] = qr (eye (3));
-%! assert (size (p), [3, 3]);
-%! [q, r, p] = qr (speye (3));
 %! assert (size (p), [3, 3]);
 %! [q, r, p] = qr (eye (3), 'vector');
 %! assert (size (p), [1, 3]);
-%! [q, r, p] = qr (speye (3), 'vector');
-%! assert (size (p), [1, 3]);
 %! [q, r, p] = qr (eye (3), 'econ');
-%! assert (size (p), [3, 3]);
-%! [q, r, p] = qr (speye (3), 'econ');
 %! assert (size (p), [3, 3]);
 %! [q, r, p] = qr (eye (3), 0);
 %! assert (size (p), [1, 3]);
+
+%!testif ; (__have_feature__ ("SPQR") && __have_feature__ ("CHOLMOD")) || __have_feature__ ("CXSPARSE") <*66488>
+%! ## Orientation of 'p' output for sparse matrices
+%! [q, r, p] = qr (speye (3));
+%! assert (size (p), [3, 3]);
+%! [q, r, p] = qr (speye (3), 'vector');
+%! assert (size (p), [1, 3]);
+%! [q, r, p] = qr (speye (3), 'econ');
+%! assert (size (p), [3, 3]);
 %! [q, r, p] = qr (speye (3), 0);
 %! assert (size (p), [1, 3]);
 
