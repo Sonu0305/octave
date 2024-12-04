@@ -28,12 +28,12 @@
 ## @deftypefnx {} {} treeplot (@var{tree}, @var{node_style}, @var{edge_style})
 ## Produce a graph of tree or forest.
 ##
-## The first argument is vector of predecessors.
+## The first argument is a row vector of parent indices.
 ##
 ## The optional parameters @var{node_style} and @var{edge_style} define the
 ## output plot style.
 ##
-## The complexity of the algorithm is O(n) in terms of is time and memory
+## The complexity of the algorithm is O(n) in terms of time and memory
 ## requirements.
 ## @seealso{etreeplot, gplot}
 ## @end deftypefn
@@ -44,8 +44,8 @@ function treeplot (tree, node_style = "ko", edge_style = "r")
     print_usage ();
   endif
 
-  if (! isnumeric (tree) || ! isrow (tree) || any (tree > length (tree)))
-    error ("treeplot: TREE must be a vector of predecessors");
+  if (! isnumeric (tree) || ! isrow (tree) || any (tree > numel (tree)))
+    error ("treeplot: TREE must be a row vector of parent indices");
   endif
 
   ##  Verify node_style
@@ -55,21 +55,17 @@ function treeplot (tree, node_style = "ko", edge_style = "r")
     endif
   endif
 
-  ## Make it a row vector.
-  tree = tree(:)';
-
   ## The count of nodes of the graph.
-  num_nodes = length (tree);
+  num_nodes = numel (tree);
 
   ## The number of children.
   num_children = zeros (1, num_nodes+1);
 
+  ## accumarray() is faster than a for loop if num_nodes > 40.
   for i = 1:num_nodes
-    ## VEC_OF_CHILD is helping vector which is used to speed up the
-    ## choose of descendant nodes.
-
-    num_children(tree(i)+1) = num_children(tree(i)+1) + 1;
+    num_children(tree(i)+1) += 1;
   endfor
+
   pos = 1;
   start = zeros (1, num_nodes+1);
   xhelp = zeros (1, num_nodes+1);
@@ -81,27 +77,29 @@ function treeplot (tree, node_style = "ko", edge_style = "r")
     stop(i) = pos;
   endfor
   for i = 1:num_nodes
+    ## VEC_OF_CHILD is intermediate variable used to speed up the
+    ## choice of descendant nodes.
     vec_of_child(xhelp(tree(i)+1)) = i;
     xhelp(tree(i)+1) = xhelp(tree(i)+1)+1;
   endfor
 
-  ## The number of "parent" (actual) node (its descendants will be
-  ## browse in the next iteration).
+  ## The number of "parent" (actual) node.
+  ## (the descendants will be analyzed in the next iteration of loop).
   par_number = 0;
 
-  ## The x-coordinate of the left most descendant of "parent node"
-  ## this value is increased in each leaf.
+  ## The x-coordinate of the leftmost descendant of "parent node".
+  ## This value is increased in each leaf.
   left_most = 0;
 
   ## The level of "parent" node (root level is num_nodes).
   level = num_nodes;
 
-  ## Num_nodes - max_ht is the height of this graph.
+  ## Num_nodes : max_ht is the height of this graph.
   max_ht = num_nodes;
 
-  ## Main stack - each item consists of two numbers - the number of
-  ## node and the number it's of parent node on the top of stack
-  ## there is "parent node".
+  ## Main stack : each item consists of two numbers, 1) the number of
+  ## the node and 2) the number of it's parent node.
+  ## On the top of stack there is "parent node".
   stk = [-1, 0];
 
   ## Stack which is used to draw the graph edge (it has to be an
@@ -113,11 +111,11 @@ function treeplot (tree, node_style = "ko", edge_style = "r")
     if (start(par_number+1) < stop(par_number+1))
       idx = vec_of_child(start(par_number+1):stop(par_number+1)-1);
     else
-      idx = zeros (1, 0);
+      idx = [];
     endif
     ## Add to idx the vector of parent descendants.
     stk = [stk; [idx', ones(fliplr(size(idx)))*par_number]];
-    ## Add to stack the records relevant to parent descendant s.
+    ## Add to stack the records relevant to parent descendants.
     if (par_number != 0)
       skelet = [skelet; ([ones(size(idx))*par_number; idx])(:)];
     endif
@@ -127,7 +125,7 @@ function treeplot (tree, node_style = "ko", edge_style = "r")
       left_most += 1;
       x_coordinate_r(par_number) = left_most;
       max_ht = min (max_ht, level);
-      if (length (stk) > 1 && find ((circshift (stk,1) - stk) == 0) > 1
+      if (! isempty (stk) && find ((circshift (stk,1) - stk) == 0) > 1
           && stk(end,2) != stk(end-1,2))
         ## Return to the nearest branching the position to return
         ## position is the position on the stack, where should be
@@ -135,7 +133,7 @@ function treeplot (tree, node_style = "ko", edge_style = "r")
         ## same parent node).
         position = (find ((circshift (stk(:,2),1) - stk(:,2)) == 0))(end) + 1;
         par_number_vec = stk(position:end,2);
-        ## The vector of removed nodes (the content of stack form
+        ## The vector of removed nodes (the content of stack from
         ## position to end).
         skelet = [skelet; flipud(par_number_vec)];
         level += length (par_number_vec);
@@ -154,8 +152,8 @@ function treeplot (tree, node_style = "ko", edge_style = "r")
         x_coordinate_l(par_number) = left_most + 1;
       endif
     else
-      ## There were descendants of "parent nod" choose the last of
-      ## them and go on through it.
+      ## There were descendants of "parent node", choose the last of
+      ## them and go through it.
       level -= 1;
       par_number = stk(end,1);
       y_coordinate(par_number) = level;
@@ -209,11 +207,17 @@ endfunction
 
 
 %!demo
+%! % Plot a simple tree plot
 %! clf;
 %! treeplot ([2 4 2 0 6 4 6]);
-%! % Plot a simple tree plot
 
 %!demo
+%! % Plot a simple tree plot defining the edge and node styles
 %! clf;
 %! treeplot ([2 4 2 0 6 4 6], "b+", "g");
-%! % Plot a simple tree plot defining the edge and node styles
+
+## Test input validation
+%!error <Invalid call> treeplot ()
+%!error <TREE must be a row vector> treeplot ("ABC")
+%!error <TREE must be a row vector> treeplot ([1;2;3])
+%!error <TREE must be a row vector> treeplot ([1,2,4])
