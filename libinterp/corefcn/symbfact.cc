@@ -34,7 +34,7 @@
 
 #include "CSparse.h"
 #include "boolSparse.h"
-#include "dColVector.h"
+#include "dRowVector.h"
 #include "dSparse.h"
 #include "oct-locbuf.h"
 #include "oct-sparse.h"
@@ -249,7 +249,7 @@ Cholesky@tie{}factorization as determined by @var{typ}.
 
   CHOLMOD_NAME(etree) (Aup, Parent, cm);
 
-  ColumnVector tmp (n);    // Declaration must precede any goto cleanup.
+  RowVector tmp (n);    // Declaration must precede any goto cleanup.
   std::string err_msg;
 
   if (cm->status < CHOLMOD_OK)
@@ -403,9 +403,9 @@ cleanup:
 %!testif HAVE_CHOLMOD
 %! A = sparse (magic (3));
 %! [count, h, parent, post, r] = symbfact (A);
-%! assert (count, [3; 2; 1]);
+%! assert (count, [3, 2, 1]);
 %! assert (h, 3);
-%! assert (parent, [2; 3; 0]);
+%! assert (parent, [2, 3, 0]);
 %! assert (r, sparse (triu (true (3))));
 
 %!testif HAVE_CHOLMOD
@@ -427,8 +427,7 @@ cleanup:
 %! fail ("symbfact (sparse (1), {1})", "TYP must be a string");
 %! fail ("symbfact (sparse (1), 'foobar')", 'unrecognized TYP "foobar"');
 %! fail ("symbfact (sparse (1), 'sym', {'L'})", "MODE must be a string");
-%! fail ('symbfact (sparse (1), "sym", "foobar")',
-%!       'unrecognized MODE "foobar"');
+%! fail ('symbfact (sparse (1), "sym", "foobar")','unrecognized MODE "foobar"');
 %! fail ("symbfact (sparse ([1, 2; 3, 4; 5, 6]))", "S must be a square matrix");
 
 */

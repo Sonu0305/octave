@@ -128,6 +128,9 @@ Summary of important user-visible changes for version 10 (yyyy-mm-dd):
   "median" to allow the user to select which option to use.  This property
   should not be expected to function in code used outside of Octave.
 
+- `symbfact`: outputs `count`, `parent`, and `post` are now row vectors rather
+  than column vectors.
+
 ### Alphabetical list of new functions added in Octave 10
 
 * `clim`
