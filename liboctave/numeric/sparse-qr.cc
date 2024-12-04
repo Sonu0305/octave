@@ -215,12 +215,19 @@ sparse_qr<SPARSE_T>::sparse_qr_rep::E () const
       ret(i) = i + 1;
 
   return ret;
+
 #elif defined (HAVE_CXSPARSE)
 
-  (*current_liboctave_error_handler)
-    ("sparse-qr: permutation output is not supported by CXSparse");
+  ColumnVector ret (ncols);
 
-  return ColumnVector ();  // needed to suppress compiler warning
+  if (S->q)
+    for (octave_idx_type i = 0; i < ncols; i++)
+      ret(i) = from_suitesparse_long (S->q[i]) + 1;
+  else
+    for (octave_idx_type i = 0; i < ncols; i++)
+      ret(i) = i + 1;
+
+  return ret;
 
 #else
 
