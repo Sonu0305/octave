@@ -1,5 +1,17 @@
 For (bug #XXXXX) see https://savannah.gnu.org/bugs/?XXXXX
 
+Summary of bugs fixed for version 9.4.0 (tbd):
+-----------------------------------------------------
+
+### Improvements and fixes
+
+### GUI
+
+### Build system / Tests
+
+### Documentation
+
+
 Summary of bugs fixed for version 9.3.0 (2024-12-12):
 -----------------------------------------------------
 
