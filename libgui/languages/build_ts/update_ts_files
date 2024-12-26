@@ -2,9 +2,36 @@
 
 # This scripts has to be called from the folder libgui/languages
 # where the *.ts files for each provided translation are located
+echo "---------------------------------------------"
+echo
+echo " Updating language file from current sources "
+echo
+echo "   Do NOT interrupt this script by Ctrl-C,"
+echo "   use 'q' instead."
+echo
+echo "---------------------------------------------"
 
-# The paths with libgui sources to scan for text strings
-SEARCH_PATH_COMMON="../graphics ../qterminal ../src"
+# lupdate does not recognize the macro for the octave namespace.
+# Therefore, the relevant sources are copied into a temporary
+# directory where the macros for begining and edning a namespace
+# are replaced by the original syntax.
+echo
+echo -n "Preparing temporary sources ... "
+
+OCTAVE_TEMP="__octave_temp_gui_sources__"
+mkdir $OCTAVE_TEMP
+cp -a ../graphics $OCTAVE_TEMP/
+cp -a ../qterminal $OCTAVE_TEMP/
+cp -a ../src $OCTAVE_TEMP/
+
+find $OCTAVE_TEMP -type f -exec \
+      sed -i -e 's/OCTAVE_BEGIN_NAMESPACE(\([^)]\+\))/namespace \1 \{/g'\
+             -e 's/OCTAVE_END_NAMESPACE(\([^)]\+\))/\}/g' {} \;
+
+echo "done"
+
+# Now set the search paths for lupdate to the temporary sources
+SEARCH_PATH_COMMON="$OCTAVE_TEMP/graphics $OCTAVE_TEMP/qterminal $OCTAVE_TEMP/src"
 
 # Path to Qt and QScintilla files with strings that should also be
 # translated by octave in case that Qt or QScintilla does not provide
@@ -15,7 +42,7 @@ SEARCH_PATH_QSCI="build_ts/octave-qsci"
 # The directory with translations provided by Qt and QScintilla
 # FIXME: This constant should not be hardcoded.  Probably best if
 # it could be picked up from the configuration such as HAVE_QTX in config.h.
-QT_VERSION="qt5"
+QT_VERSION="qt6"
 QT_LANG_DIR=/usr/share/$QT_VERSION/translations
 
 # Now update all ts files
@@ -52,15 +79,25 @@ do
   echo "$xx_yy: Existing translations for Qt: $T_QT, QSci: $T_QSCI"
 
   # Do the update after user's confirmation
-  echo    "       => scan for strings in following paths"
-  echo    "       => $SEARCH_PATH"
-  read -p "       => Update (y/[n])? " ANS;
-  ANS=${ANS:-n}
-  if [ $ANS = "y" ]; then
+  echo         "       => scan for strings in following paths"
+  echo         "       => $SEARCH_PATH"
+  read -N 1 -p "       => Update (y/[n]/q)? " ANS;
+
+  if [[ $ANS = "q" ]]; then
+    break
+  fi
+
+  if [[ $ANS = "y" ]]; then
     echo
-    lupdate -$QT_VERSION -no-obsolete -locations relative $SEARCH_PATH -ts $file
+    lupdate -no-obsolete -locations relative $SEARCH_PATH -ts $file
   fi
 
 done
 
+# Remove temporary copy of source files
+echo
+echo
+echo -n "Removing temporary sources ... "
+rm -rf $OCTAVE_TEMP
+echo "done"
 echo
