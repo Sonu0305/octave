@@ -32,13 +32,8 @@
 #include "ov-cx-diag.h"
 #include "ov-flt-cx-diag.h"
 #include "ov-re-diag.h"
-#include "ov-base-diag.cc"
 #include "ov-complex.h"
-#include "ov-cx-mat.h"
 #include "ls-utils.h"
-
-
-template class octave_base_diag<ComplexDiagMatrix, ComplexMatrix>;
 
 DEFINE_OV_TYPEID_FUNCTIONS_AND_DATA (octave_complex_diag_matrix,
                                      "complex diagonal matrix", "double");

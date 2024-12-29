@@ -30,14 +30,9 @@
 #include "byte-swap.h"
 
 #include "ov-flt-cx-diag.h"
-#include "ov-base-diag.cc"
 #include "ov-flt-re-diag.h"
 #include "ov-flt-complex.h"
-#include "ov-flt-cx-mat.h"
 #include "ls-utils.h"
-
-
-template class octave_base_diag<FloatComplexDiagMatrix, FloatComplexMatrix>;
 
 DEFINE_OV_TYPEID_FUNCTIONS_AND_DATA (octave_float_complex_diag_matrix,
                                      "float complex diagonal matrix", "single");

@@ -34,10 +34,6 @@
 #include "dim-vector.h"
 
 #include "mxarray.h"
-#include "ov-base.h"
-#include "ov-scalar.h"
-#include "ov-bool.h"
-#include "ov-bool-mat.h"
 #include "errwarn.h"
 #include "ops.h"
 #include "oct-locbuf.h"
@@ -50,8 +46,6 @@
 
 #include "ov-base-sparse.h"
 #include "ov-base-sparse.cc"
-
-template class octave_base_sparse<SparseBoolMatrix>;
 
 DEFINE_OV_TYPEID_FUNCTIONS_AND_DATA (octave_sparse_bool_matrix,
                                      "sparse bool matrix", "logical");

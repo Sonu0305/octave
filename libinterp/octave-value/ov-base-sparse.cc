@@ -38,6 +38,7 @@
 #include "pr-output.h"
 
 #include "byte-swap.h"
+#include "errwarn.h"
 #include "ls-oct-text.h"
 #include "ls-utils.h"
 #include "ls-hdf5.h"

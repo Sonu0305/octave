@@ -36,9 +36,6 @@
 #include "oct-locbuf.h"
 
 #include "mxarray.h"
-#include "ov-base.h"
-#include "ov-scalar.h"
-#include "ov-complex.h"
 #include "errwarn.h"
 
 #include "oct-hdf5.h"
@@ -50,9 +47,6 @@
 #include "ov-base-sparse.cc"
 
 #include "ov-bool-sparse.h"
-
-
-template class octave_base_sparse<SparseComplexMatrix>;
 
 DEFINE_OV_TYPEID_FUNCTIONS_AND_DATA (octave_sparse_complex_matrix,
                                      "sparse complex matrix", "double");

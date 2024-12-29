@@ -31,13 +31,8 @@
 
 #include "ov-re-diag.h"
 #include "ov-flt-re-diag.h"
-#include "ov-base-diag.cc"
 #include "ov-scalar.h"
-#include "ov-re-mat.h"
 #include "ls-utils.h"
-
-
-template class octave_base_diag<DiagMatrix, Matrix>;
 
 DEFINE_OV_TYPEID_FUNCTIONS_AND_DATA (octave_diag_matrix, "diagonal matrix",
                                      "double");
