@@ -204,7 +204,7 @@ gui_settings::sc_value (const sc_pref& scpref) const
 
       // Get the value from the settings where the key sequences are stored
       // as strings
-      return value (full_settings_key, key_seq.toString ()).toString ();
+      return value (full_settings_key, key_seq.toString (QKeySequence::NativeText)).toString ();
     }
   else
     return scpref.def_text ();

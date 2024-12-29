@@ -49,6 +49,7 @@
 #include "documentation-dock-widget.h"
 #include "files-dock-widget.h"
 #include "gui-settings.h"
+#include "gui-preferences-sc.h"
 #include "history-dock-widget.h"
 #include "interpreter-qobject.h"
 #include "main-window.h"
@@ -403,6 +404,8 @@ base_qobject::config_translators ()
   m_qapplication->installTranslator (m_qsci_tr);
 
   m_translators_installed = true;
+
+  init_all_shortcuts ();  // after translators are loaded
 }
 
 void

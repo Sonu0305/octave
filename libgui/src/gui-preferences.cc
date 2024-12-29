@@ -130,7 +130,7 @@ sc_pref::def_value () const
 QString
 sc_pref::def_text () const
 {
-  return def_value ().toString ();
+  return def_value ().toString (QKeySequence::NativeText);
 }
 
 all_shortcut_preferences *all_shortcut_preferences::s_instance = nullptr;

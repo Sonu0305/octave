@@ -282,6 +282,7 @@ sc_prevent_rl_conflicts ("shortcuts/prevent_readline_conflicts", QVariant (false
 const gui_pref
 sc_prevent_rl_conflicts_menu ("shortcuts/prevent_readline_conflicts_menu", QVariant (false));
 
+extern void init_all_shortcuts (void);
 extern QString get_shortcut_section (const QString& key);
 
 #endif
