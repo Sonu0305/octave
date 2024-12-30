@@ -40,13 +40,13 @@
 // the macro.
 
 // The translations of the shortcut's descriptions require a more
-// complicated structure. If already using the sc-pref constructor
+// complicated structure.  If already using the sc-pref constructor
 // with the description as argument, this description is added to
-// the hash all_shortcut_keys and the translation cannot be added
-// later on. Therefore, all sc_pref objects are first declared with
+// the hash "all_shortcut_keys" and the translation cannot be added
+// later on.  Therefore, all sc_pref objects are first declared with
 // the empty constructor and description, key and shortcut are added
-// later by calling init_all_shortcuts defined here. This function
-// is calles in the constructor of the base qobject directly after
+// later by calling init_all_shortcuts defined here.  This function
+// is called in the constructor of the base qobject directly after
 // loading the translators.
 
 // Dock widgets
@@ -121,8 +121,9 @@ sc_pref sc_main_news_release_notes;
 sc_pref sc_main_news_community_news;
 
 // Tab handling
-// The following shortcuts are moved into a separate tab.  The key names
-// are not change for preserving compatibility with older versions
+// The following shortcuts are placed in a menu item that is not displayed.
+// This still enables use of the defined shortcuts.  The key names were not
+// changed to preserve compatibility with older versions of Octave.
 sc_pref sc_edit_file_close;
 sc_pref sc_edit_file_close_all;
 sc_pref sc_edit_file_close_other;
@@ -295,8 +296,9 @@ void init_all_shortcuts (void)
   sc_main_news_community_news = sc_pref (QCoreApplication::translate ("shortcuts", "Community News"), sc_main_news + ":community_news", QKeySequence::UnknownKey);
 
   // Tab handling
-  // The following shortcuts are moved into a separate tab.  The key names
-  // are not change for preserving compatibility with older versions
+  // The following shortcuts are placed in a menu item that is not displayed.
+  // This still enables use of the defined shortcuts.  The key names were not
+  // changed to preserve compatibility with older versions of Octave.
   sc_edit_file_close = sc_pref (QCoreApplication::translate ("shortcuts", "Close Tab"), sc_edit_file_cl, QKeySequence::Close);
   sc_edit_file_close_all = sc_pref (QCoreApplication::translate ("shortcuts", "Close All Tabs"), sc_edit_file_cl + "_all", QKeySequence::UnknownKey);
   sc_edit_file_close_other = sc_pref (QCoreApplication::translate ("shortcuts", "Close Other Tabs"), sc_edit_file_cl + "_other", QKeySequence::UnknownKey);

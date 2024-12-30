@@ -457,9 +457,9 @@ shortcuts_tree_widget::shortcuts_tree_widget (QWidget *parent)
   QList<QString> shortcut_settings_keys
     = all_shortcut_preferences::keys ();
 
-  // Sort the keys with respect to the desciption, by adding
-  // descriotions as keys and the settings keys as values to a map.
-  // Fir this, use QMultiMap since descriptions might not be unique.
+  // Sort the keys with respect to the description, by adding
+  // descriptions as keys and the settings keys as values to a map.
+  // Use QMultiMap since descriptions might not be unique.
   QMultiMap <QString, QString> shortcut_settings_map;
   for (const auto& settings_key : shortcut_settings_keys)
     {

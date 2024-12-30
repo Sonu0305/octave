@@ -1584,7 +1584,7 @@ file_editor::set_shortcuts ()
   settings.set_shortcut (m_context_help_action, sc_edit_help_help_keyword);
   settings.set_shortcut (m_context_doc_action,  sc_edit_help_doc_keyword);
 
-  // Tab navigation without menu entries
+  // Tab navigation (no menu, but allows for creation of shortcuts)
   settings.set_shortcut (m_switch_left_tab_action, sc_edit_tabs_switch_left_tab);
   settings.set_shortcut (m_switch_right_tab_action, sc_edit_tabs_switch_right_tab);
   settings.set_shortcut (m_move_tab_left_action, sc_edit_tabs_move_tab_left);
