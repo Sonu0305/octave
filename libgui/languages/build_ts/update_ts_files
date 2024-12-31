@@ -30,6 +30,7 @@ find $OCTAVE_TEMP -type f -exec \
 
 echo "done"
 
+
 # Now set the base search path for lupdate to the temporary sources
 SEARCH_PATH_COMMON="$OCTAVE_TEMP/graphics $OCTAVE_TEMP/qterminal $OCTAVE_TEMP/src"
 
@@ -40,12 +41,18 @@ SEARCH_PATH_QT="build_ts/octave-qt"
 SEARCH_PATH_QSCI="build_ts/octave-qsci"
 
 # The directory with translations provided by Qt and QScintilla
-# FIXME: This constant should not be hardcoded.  Probably best if
-# it could be picked up from the configuration such as HAVE_QTX in config.h.
-QT_VERSION="qt6"
-QT_LANG_DIR=/usr/share/$QT_VERSION/translations
+# First test qt above qt5 which provides QT_INSTALL_TRANSLATIONS
+# by "qtpaths --query"
+QT_LANG_DIR=`qtpaths --query 2>/dev/null | grep QT_INSTALL_TRANSLATIONS | sed -e 's/QT_INSTALL_TRANSLATIONS://'`
+if [[ -z $QT_LANG_DIR ]]; then
+  # No qt6 or no qt6 translations: test qt5 with "qtdiag" ("qtpaths"
+  # does not provide "--query" here)
+  QT_LANG_DIR=`qtdiag 2>/dev/null | grep TranslationsPath | sed -e 's/  TranslationsPath: //'`
+fi
 
-# Now update all ts files
+echo "Qt translations: $QT_LANG_DIR"
+
+# Update all ts files
 for file in $(ls -b1 *.ts)
 do
 
@@ -61,17 +68,24 @@ do
   # path if no existing translations are found.  In this case we have to scan
   # the locally collected source files.
   if [ $xx_yy != "en_US" ]; then  # No translation required for en_US
-    # Look for Qt translations
-    if [ "`ls $QT_LANG_DIR | grep -i qt_$xx.qm | wc -l`" -eq 0 ] &&
-       [ "`ls $QT_LANG_DIR | grep -i qt_$xx_yy.qm | wc -l`" -eq 0 ]; then
-       SEARCH_PATH="$SEARCH_PATH $SEARCH_PATH_QT"
-       T_QT="NO"
-    fi
-    # Look for QScintilla translations
-    if [ "`ls $QT_LANG_DIR | grep -i qscintilla_$xx.qm | wc -l`" -eq 0 ] &&
-       [ "`ls $QT_LANG_DIR | grep -i qscintilla_$xx_yy.qm | wc -l`" -eq 0 ]; then
-       SEARCH_PATH="$SEARCH_PATH $SEARCH_PATH_QSCI"
-       T_QSCI="NO"
+    if [ -z $QT_LANG_DIR ]; then
+      # No translations for Qt found at all
+      SEARCH_PATH="$SEARCH_PATH $SEARCH_PATH_QT $SEARCH_PATH_QSCI"
+      T_QT="NO"
+      T_QSCI="NO"
+    else
+      # Look for Qt translations for the current language
+      if [ "`ls $QT_LANG_DIR | grep -i qt_$xx.qm | wc -l`" -eq 0 ] &&
+         [ "`ls $QT_LANG_DIR | grep -i qt_$xx_yy.qm | wc -l`" -eq 0 ]; then
+         SEARCH_PATH="$SEARCH_PATH $SEARCH_PATH_QT"
+         T_QT="NO"
+      fi
+      # Look for QScintilla translations
+      if [ "`ls $QT_LANG_DIR | grep -i qscintilla_$xx.qm | wc -l`" -eq 0 ] &&
+         [ "`ls $QT_LANG_DIR | grep -i qscintilla_$xx_yy.qm | wc -l`" -eq 0 ]; then
+         SEARCH_PATH="$SEARCH_PATH $SEARCH_PATH_QSCI"
+         T_QSCI="NO"
+      fi
     fi
   fi
   echo
@@ -79,20 +93,22 @@ do
   echo "$xx_yy: Existing translations for Qt: $T_QT, QSci: $T_QSCI"
 
   # Do the update after user's confirmation
-  echo         "       => scan for strings in following paths"
-  echo         "       => $SEARCH_PATH"
+  SEARCH_PATH_CLEAN=${SEARCH_PATH//"$OCTAVE_TEMP/"/}
+  echo         "       => scan for strings in following paths:"
+  echo         "          $SEARCH_PATH_CLEAN"
   read -N 1 -p "       => Update (y/[n]/q)? " ANS;
 
-  if [[ $ANS = "q" ]]; then
+  if [ "$ANS" = "q" ]; then
     break
   fi
 
-  if [[ $ANS = "y" ]]; then
+  if [ "$ANS" = "y" ]; then
     echo
     lupdate -no-obsolete -locations relative $SEARCH_PATH -ts $file
   fi
 
 done
+
 
 # Remove temporary copy of source files
 echo
