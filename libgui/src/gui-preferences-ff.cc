@@ -32,6 +32,9 @@
 // Find files dialog preferences
 
 gui_pref
+ff_geometry ("findfiles/geometry", QVariant ());
+
+gui_pref
 ff_file_name ("findfiles/file_name", QVariant ("*"));
 
 gui_pref

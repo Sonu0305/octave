@@ -1085,14 +1085,7 @@ main_window::update_octave_directory (const QString& dir)
   // Remove existing entry, if any, then add new directory at top and
   // mark it as the current directory.  Finally, update the file list
   // widget.
-
-  int index = m_current_directory_combo_box->findText (dir);
-
-  if (index >= 0)
-    m_current_directory_combo_box->removeItem (index);
-
-  m_current_directory_combo_box->insertItem (0, dir);
-  m_current_directory_combo_box->setCurrentIndex (0);
+  combobox_insert_current_item (m_current_directory_combo_box, dir);
 }
 
 void

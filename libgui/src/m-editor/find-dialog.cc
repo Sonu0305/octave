@@ -233,8 +233,8 @@ find_dialog::save_settings ()
   settings.setValue (ed_fdlg_pos.settings_key (), m_last_position);
 
   // Is current search/replace text in the mru list?
-  mru_update (m_search_line_edit);
-  mru_update (m_replace_line_edit);
+  combobox_update (m_search_line_edit, m_mru_length);
+  combobox_update (m_replace_line_edit, m_mru_length);
 
   // Store mru lists
   QStringList mru;
@@ -328,7 +328,7 @@ find_dialog::handle_search_text_changed ()
   if (m_search_selection_check_box->isChecked ())
     m_find_result_available = false;
 
-  mru_update (m_search_line_edit);
+  combobox_update (m_search_line_edit, m_mru_length);
 }
 
 // replaced text has changed: reset the search
@@ -339,35 +339,7 @@ find_dialog::handle_replace_text_changed ()
   if (m_replace_line_edit->currentText () == m_replace_line_edit->itemText (0))
     return;
 
-  mru_update (m_replace_line_edit);
-}
-
-// Update the mru list
-void
-find_dialog::mru_update (QComboBox *mru)
-{
-  // Remove possible empty entries from the mru list
-  int index;
-  while ((index = mru->findText (QString ())) >= 0)
-    mru->removeItem (index);
-
-  // Get current text and return if it is empty
-  QString text = mru->currentText ();
-
-  if (text.isEmpty ())
-    return;
-
-  // Remove occurrences of the current text in the mru list
-  while ((index = mru->findText (text)) >= 0)
-    mru->removeItem (index);
-
-  // Remove the last entry from the end if the list is full
-  if (mru->count () == m_mru_length)
-    mru->removeItem (m_mru_length -1);
-
-  // Insert new item at the beginning and set it as current item
-  mru->insertItem (0, text);
-  mru->setCurrentIndex (0);
+  combobox_update (m_replace_line_edit, m_mru_length);
 }
 
 void

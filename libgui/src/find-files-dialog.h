@@ -25,6 +25,8 @@
 #if ! defined (octave_find_files_dialog_h)
 #define octave_find_files_dialog_h 1
 
+#include <QCloseEvent>
+#include <QComboBox>
 #include <QDialog>
 #include <QFileInfo>
 #include <QModelIndex>
@@ -68,13 +70,17 @@ private Q_SLOTS:
   void look_for_files ();
   void item_double_clicked (const QModelIndex&);
   void handle_done (int);
+  void handle_rows_inserted (const QModelIndex &parent, int first, int last);
 
 private:
 
+  // Reimplemented close event
+  void closeEvent (QCloseEvent *e);
+
   bool is_match (const QFileInfo& info);
 
-  QLineEdit *m_start_dir_edit;
-  QLineEdit *m_file_name_edit;
+  QComboBox *m_start_dir_edit;
+  QComboBox *m_file_name_edit;
   QPushButton *m_stop_button;
   QPushButton *m_find_button;
   QPushButton *m_close_button;
@@ -86,9 +92,11 @@ private:
   QCheckBox *m_name_case_check;
   QCheckBox *m_contains_text_check;
   QCheckBox *m_content_case_check;
-  QLineEdit *m_contains_text_edit;
+  QComboBox *m_contains_text_edit;
   QDirIterator *m_dir_iterator;
   QStatusBar *m_status_bar;
+
+  const int m_mru_length = 12;
 };
 
 OCTAVE_END_NAMESPACE(octave)

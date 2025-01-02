@@ -29,9 +29,32 @@
 #include "octave-config.h"
 
 #include <QColor>
+#include <QComboBox>
 #include <QRect>
 
 OCTAVE_BEGIN_NAMESPACE(octave)
+
+/*!
+  Insert an item on top of a combobos list and remove it from the
+  list if it is in the list.
+
+  @param Pointer to the combo box
+  @param Qstring with the nee item text; if empty string,
+  the current text of the combobox is selected for updating
+*/
+
+extern OCTGUI_API void
+combobox_insert_current_item  (QComboBox *cb, const QString &text);
+
+/*!
+  Update the most recemtly used list of a combo box.
+
+  @param Pointer to the combo box
+  @param Length of the mru list
+*/
+
+extern OCTGUI_API void
+combobox_update (QComboBox *cb, const int cb_length);
 
 /*!
   Deterimine an alternative color to @p col1 with less contrast

@@ -44,6 +44,7 @@
 #include "gui-preferences-dc.h"
 #include "gui-preferences-sc.h"
 #include "gui-settings.h"
+#include "gui-utils.h"
 
 #include "defaults.h"
 #include "file-ops.h"
@@ -291,14 +292,7 @@ documentation_bookmarks::filter_activate (bool state)
 void
 documentation_bookmarks::update_filter_history ()
 {
-  QString text = m_filter->currentText ();   // get current text
-  int index = m_filter->findText (text);     // and its actual index
-
-  if (index > -1)
-    m_filter->removeItem (index);    // remove if already existing
-
-  m_filter->insertItem (0, text);    // (re)insert at beginning
-  m_filter->setCurrentIndex (0);
+  combobox_insert_current_item (m_filter, QString ());
 }
 
 void

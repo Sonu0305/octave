@@ -130,9 +130,6 @@ private:
   //! Reimplemented close event
   void closeEvent (QCloseEvent *e);
 
-  //! Update mru lists with new entry
-  void mru_update (QComboBox *mru);
-
   void no_matches_message ();
   void do_replace ();
 

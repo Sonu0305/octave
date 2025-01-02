@@ -39,6 +39,7 @@
 #include "gui-preferences-global.h"
 #include "gui-preferences-hw.h"
 #include "gui-settings.h"
+#include "gui-utils.h"
 #include "history-dock-widget.h"
 
 #include "cmd-hist.h"
@@ -109,14 +110,7 @@ history_dock_widget::save_settings ()
 void
 history_dock_widget::update_filter_history ()
 {
-  QString text = m_filter->currentText ();   // get current text
-  int index = m_filter->findText (text);     // and its actual index
-
-  if (index > -1)
-    m_filter->removeItem (index);    // remove if already existing
-
-  m_filter->insertItem (0, text);    // (re)insert at beginning
-  m_filter->setCurrentIndex (0);
+  combobox_insert_current_item (m_filter, QString ());
 }
 
 void

@@ -54,6 +54,7 @@
 #include "gui-preferences-fb.h"
 #include "gui-preferences-global.h"
 #include "gui-settings.h"
+#include "gui-utils.h"
 #include "qt-interpreter-events.h"
 
 #include "oct-env.h"
@@ -575,14 +576,8 @@ files_dock_widget::display_directory (const QString& dir,
 
           // see if it's in the list, and if it is,
           // remove it and then put at top of the list
-          int index
-            = m_current_directory->findText (fileInfo.absoluteFilePath ());
-          if (index != -1)
-            {
-              m_current_directory->removeItem (index);
-            }
-          m_current_directory->insertItem (0, fileInfo.absoluteFilePath ());
-          m_current_directory->setCurrentIndex (0);
+          combobox_insert_current_item (m_current_directory,
+                                        fileInfo.absoluteFilePath ());
         }
       else
         {

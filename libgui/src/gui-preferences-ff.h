@@ -30,6 +30,8 @@
 
 // Find files dialog preferences
 
+extern gui_pref ff_geometry;
+
 extern gui_pref ff_file_name;
 
 extern gui_pref ff_start_dir;
