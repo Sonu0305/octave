@@ -69,7 +69,9 @@ find_files_dialog::find_files_dialog (QWidget *p)
 
   QLabel *file_name_label = new QLabel (tr ("Named:"));
   m_file_name_edit = new QComboBox;
-  m_file_name_edit->setToolTip (tr ("Enter the filename search expression"));
+  m_file_name_edit->setToolTip (tr ("Enter the filename search patterns.\n"
+                                    "Several different patterns can be\n"
+                                    "separated by ';', e.g. '*.cc ; *.h'"));
   m_file_name_edit->setEditable (true);
   m_file_name_edit->setMaxCount (m_mru_length);
 
@@ -93,12 +95,16 @@ find_files_dialog::find_files_dialog (QWidget *p)
   while (mru.length () > m_mru_length)
     mru.removeLast ();
   m_start_dir_edit->addItems (mru);
-  m_start_dir_edit->setItemText (0, QDir::currentPath ());
 
   m_browse_button = new QPushButton (tr ("Browse..."));
   m_browse_button->setToolTip (tr ("Browse for start directory"));
   connect (m_browse_button, &QPushButton::clicked,
            this, &find_files_dialog::browse_folders);
+
+  m_current_dir_button = new QPushButton (tr ("Current Dir"));
+  m_current_dir_button->setToolTip (tr ("Set start directory to current directory"));
+  connect (m_current_dir_button, &QPushButton::clicked,
+           this, &find_files_dialog::start_dir_to_cwd);
 
   m_recurse_dirs_check = new QCheckBox (tr ("Search subdirectories"));
   m_recurse_dirs_check->setToolTip (tr ("Search recursively through directories for matching files"));
@@ -194,13 +200,14 @@ find_files_dialog::find_files_dialog (QWidget *p)
   name_layout->addWidget (start_dir_label, 1, 0);
   name_layout->addWidget (m_start_dir_edit, 1, 1, 1, 2);
   name_layout->addWidget (m_browse_button, 1, 3, 1, 1);
+  name_layout->addWidget (m_current_dir_button, 2, 3, 1, 1);
   name_layout->setColumnStretch (1, 1);
 
   QHBoxLayout *name_options_layout = new QHBoxLayout;
   name_options_layout->addWidget (m_recurse_dirs_check);
   name_options_layout->addWidget (m_include_dirs_check);
   name_options_layout->addWidget (m_name_case_check);
-  name_layout->addLayout (name_options_layout, 2, 0, 1, 3);
+  name_layout->addLayout (name_options_layout, 2, 0, 1, 2);
 
   // content options
   QGroupBox *content_group = new QGroupBox (tr ("File contents"));
@@ -210,10 +217,7 @@ find_files_dialog::find_files_dialog (QWidget *p)
   content_layout->addWidget (m_contains_text_check, 0, 0, 1, 1);
   content_layout->addWidget (m_contains_text_edit, 0, 1, 1, 1);
   content_layout->setColumnStretch (1, 1);
-
-  QHBoxLayout *content_options_layout = new QHBoxLayout;
-  content_options_layout->addWidget (m_content_case_check);
-  content_layout->addLayout (content_options_layout, 1, 0, 1, 2);
+  content_layout->addWidget (m_content_case_check, 0, 2, 1, 1);
 
   // results
   QLabel *results_hint = new QLabel (tr ("Results: Double click opens the file"
@@ -238,6 +242,8 @@ find_files_dialog::find_files_dialog (QWidget *p)
 
   connect (this, &find_files_dialog::finished,
            this, &find_files_dialog::handle_done);
+
+  m_find_button->setFocus(Qt::OtherFocusReason);
 
   if (settings.contains (ff_geometry.settings_key ()))
     restoreGeometry (settings.byte_array_value (ff_geometry));
@@ -318,20 +324,22 @@ find_files_dialog::start_find ()
   if (! m_name_case_check->isChecked ())
     filters |= QDir::CaseSensitive;
 
-  QStringList nameFilters;
-  nameFilters.append (m_file_name_edit->currentText ());
+  const QStringList nameFilters =
+    m_file_name_edit->currentText ().split (QRegularExpression("\\s*;\\s*"),
+                                            Qt::SkipEmptyParts);
 
   if (m_dir_iterator)
     delete m_dir_iterator;
 
-  m_dir_iterator = new QDirIterator (m_start_dir_edit->currentText (), nameFilters,
-                                     filters, flags);
+  m_dir_iterator = new QDirIterator (m_start_dir_edit->currentText (),
+                                     nameFilters, filters, flags);
 
   // enable/disable widgets
   m_find_button->setEnabled (false);
   m_stop_button->setEnabled (true);
   m_close_button->setEnabled (false);
   m_browse_button->setEnabled (false);
+  m_current_dir_button->setEnabled (false);
   m_start_dir_edit->setEnabled (false);
   m_file_name_edit->setEnabled (false);
   m_recurse_dirs_check->setEnabled (false);
@@ -354,6 +362,7 @@ find_files_dialog::stop_find ()
   m_stop_button->setEnabled (false);
   m_close_button->setEnabled (true);
   m_browse_button->setEnabled (true);
+  m_current_dir_button->setEnabled (true);
   m_start_dir_edit->setEnabled (true);
   m_file_name_edit->setEnabled (true);
   m_recurse_dirs_check->setEnabled (true);
@@ -391,6 +400,12 @@ find_files_dialog::browse_folders ()
 
   if (! dir.isEmpty ())
     combobox_insert_current_item  (m_start_dir_edit, dir);
+}
+
+void
+find_files_dialog::start_dir_to_cwd ()
+{
+  combobox_insert_current_item (m_start_dir_edit, QDir::currentPath ());
 }
 
 void

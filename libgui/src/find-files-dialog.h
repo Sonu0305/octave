@@ -67,6 +67,7 @@ private Q_SLOTS:
   void start_find ();
   void stop_find ();
   void browse_folders ();
+  void start_dir_to_cwd ();
   void look_for_files ();
   void item_double_clicked (const QModelIndex&);
   void handle_done (int);
@@ -85,6 +86,7 @@ private:
   QPushButton *m_find_button;
   QPushButton *m_close_button;
   QPushButton *m_browse_button;
+  QPushButton *m_current_dir_button;
   QTableView *m_file_list;
   QTimer *m_timer;
   QCheckBox *m_recurse_dirs_check;

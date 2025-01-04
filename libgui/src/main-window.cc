@@ -1940,7 +1940,6 @@ main_window::handle_set_path_dialog_request ()
 void
 main_window::find_files (const QString& start_dir)
 {
-
   if (! m_find_files_dlg)
     {
       m_find_files_dlg = new find_files_dialog (this);
@@ -1962,10 +1961,10 @@ main_window::find_files (const QString& start_dir)
       m_find_files_dlg->show ();
     }
 
-  m_find_files_dlg->set_search_dir (start_dir);
+  if (! start_dir.isEmpty ())
+    m_find_files_dlg->set_search_dir (start_dir);
 
   m_find_files_dlg->activateWindow ();
-
 }
 
 void

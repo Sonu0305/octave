@@ -43,7 +43,7 @@ combobox_insert_current_item (QComboBox *cb, const QString &text)
   if (item_text.isEmpty ())
     item_text = cb->currentText ();
 
-  int idx;;
+  int idx;
   while ((idx = cb->findText (item_text)) >= 0)
     cb->removeItem (idx);
 

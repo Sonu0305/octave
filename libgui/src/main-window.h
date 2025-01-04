@@ -222,7 +222,7 @@ public Q_SLOTS:
 
   //! Find files dialog.
   //!@{
-  void find_files (const QString& startdir = QDir::currentPath ());
+  void find_files (const QString& startdir = QString ());
   void find_files_finished (int) { }
   //!@}
 
