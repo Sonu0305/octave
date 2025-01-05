@@ -326,7 +326,11 @@ find_files_dialog::start_find ()
 
   const QStringList nameFilters =
     m_file_name_edit->currentText ().split (QRegularExpression("\\s*;\\s*"),
+#if defined (HAVE_QT_SPLITBEHAVIOR_ENUM)
                                             Qt::SkipEmptyParts);
+#else
+                                            QString::SkipEmptyParts);
+#endif
 
   if (m_dir_iterator)
     delete m_dir_iterator;
