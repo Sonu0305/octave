@@ -2567,6 +2567,22 @@ file_editor_tab::do_save_file (const QString& file_to_save,
       // breakpoints would reopen the tab in this case.
       if (restore_breakpoints)
         check_restore_breakpoints ();
+
+      // re-hash load-path
+      Q_EMIT interpreter_event
+        ([] (interpreter& interp)
+         {
+           // INTERPRETER THREAD
+
+           load_path& lp = interp.get_load_path ();
+
+           // Rehashing the load path is probably only needed when executing
+           // new files for the first time and the command line prompt hasn't
+           // yet been displayed again since this *new* file has been saved
+           // for the first time.
+           // FIXME: Is there a way to detect here that a file is new?
+           lp.rehash ();
+         });
     }
   else
     {
