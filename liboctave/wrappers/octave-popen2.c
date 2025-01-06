@@ -63,8 +63,9 @@ make_command_string (const char *cmd, char *const *args)
   char *const *argp;
   size_t cmd_len;
   char *command;
+  size_t arg_len;
 
-  // Count Command length, quotes, and terminating NUL character.
+  // Count command length, quotes, and terminating NUL character.
   cmd_len = strlen (cmd) + 3;
 
   // Count argument length, space, and quotes.
@@ -75,11 +76,22 @@ make_command_string (const char *cmd, char *const *args)
 
   command = (char *) malloc (cmd_len);
 
+  // double-quote command
   sprintf (command, "\"%s\"", cmd);
 
   argp = args;
+  cmd_len = strlen (cmd) + 2;
   while (*++argp)
-    sprintf (command, "%s \"%s\"", command, *argp);
+    {
+      // append double-quoted argument separated by space to command buffer
+      command[cmd_len++] = ' ';
+      command[cmd_len++] = '"';
+      arg_len = strlen (*argp);
+      memcpy (command + cmd_len, *argp, arg_len);
+      cmd_len += arg_len;
+      command[cmd_len++] = '"';
+    }
+  command[cmd_len] = 0;
 
   return command;
 }
