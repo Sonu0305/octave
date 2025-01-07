@@ -1044,6 +1044,12 @@ nevermind:
 %!         [1, 2, NaN]);
 %! assert (! isempty (__errmsg));
 %! clear -global __errmsg;
+
+%!function [a, b] = __counterror (x)
+%!  a = x;
+%!endfunction
+%!test <66642>
+%! fail ("[a, b] = cellfun (@__counterror, {1, 4})");
 */
 
 // Arrayfun was originally a .m file written by Bill Denney and Jaroslav
