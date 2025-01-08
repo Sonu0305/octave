@@ -492,7 +492,7 @@ Copyright:
 - 2018  Ronny Standtke
 - 2018  Stefan Schlögl
 - 2018  Stevie Schraudner
-- 2018-2024  A.R. Burgers
+- 2018-2024  Antonius R. Burgers
 - 2018-2021  Andrew Janke
 - 2018-2019, 2022-2023  Jun Wang
 - 2019  Anthony Morast
