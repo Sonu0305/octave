@@ -589,6 +589,8 @@ nevermind:
 
                           retv[j] = val.resize (fdims);
                         }
+                      else
+                        error ("cellfun: function returned fewer than nargout values");
                     }
                 }
               else
@@ -609,6 +611,8 @@ nevermind:
                                               idx_type, idx_list, val);
                             }
                         }
+                      else
+                        error ("cellfun: function returned fewer than nargout values");
                     }
                 }
             }
@@ -661,7 +665,11 @@ nevermind:
                 have_some_output = true;
 
               for (int j = 0; j < num_to_copy; j++)
-                results[j](count) = tmp(j);
+                {
+                  if (! tmp(j).is_defined ())
+                    error ("cellfun: function returned fewer than nargout values");
+                  results[j](count) = tmp(j);
+                }
             }
         }
 
@@ -1332,6 +1340,8 @@ arrayfun (@@str2num, [1234],
                                 error_with_id ("Octave:invalid-fun-call",
                                                "arrayfun: all values must be scalars when UniformOutput = true");
                             }
+                          else
+                            error ("arrayfun: function returned fewer than nargout values");
                         }
                     }
                   else
@@ -1355,6 +1365,8 @@ arrayfun (@@str2num, [1234],
                                                    "arrayfun: all values must be scalars when UniformOutput = true");
                                 }
                             }
+                          else
+                            error ("arrayfun: function returned fewer than nargout values");
                         }
                     }
                 }
@@ -1414,7 +1426,11 @@ arrayfun (@@str2num, [1234],
                     have_some_output = true;
 
                   for (int j = 0; j < num_to_copy; j++)
-                    results[j](count) = tmp(j);
+                    {
+                      if (! tmp(j).is_defined ())
+                        error ("arrayfun: function returned fewer than nargout values");
+                      results[j](count) = tmp(j);
+                    }
                 }
             }
 
