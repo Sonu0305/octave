@@ -243,7 +243,11 @@ annotation_dialog::set_gui_props ()
           if (m_props(1*i +1).is_matrix_type ())
             color = octave::Utils::fromRgb (m_props(2*i +1).matrix_value ());
           else
+#if defined (HAVE_QCOLOR_FROMSTRING)
+            color.fromString (m_props(2*i +1).string_value ());
+#else
             color.setNamedColor (m_props(2*i +1).string_value ().c_str ());
+#endif
 
           if (color.isValid ())
             m_ui->btn_color->setPalette (QPalette (color));

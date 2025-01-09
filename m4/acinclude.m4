@@ -829,6 +829,37 @@ AC_DEFUN([OCTAVE_CHECK_SIGNAL_QCHECKBOX_CHECKSTATECHANGED], [
   fi
 ])
 dnl
+dnl Check whether the Qt class QColor has the fromString member function.
+dnl This member function was introduced in Qt 6.4.
+dnl
+dnl FIXME: Delete this entirely when we drop support for Qt 6.3 or older.
+dnl
+AC_DEFUN([OCTAVE_CHECK_FUNC_QCOLOR_FROMSTRING], [
+  AC_CACHE_CHECK([for QColor::fromString],
+    [octave_cv_func_qcolor_fromstring],
+    [AC_LANG_PUSH(C++)
+    ac_octave_save_CPPFLAGS="$CPPFLAGS"
+    ac_octave_save_CXXFLAGS="$CXXFLAGS"
+    CPPFLAGS="$QT_CPPFLAGS $CXXPICFLAG $CPPFLAGS"
+    CXXFLAGS="$CXXPICFLAG $CXXFLAGS"
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+        #include <QColor>
+        ]], [[
+        QColor color;
+        color.fromString ("green");
+        ]])],
+      octave_cv_func_qcolor_fromstring=yes,
+      octave_cv_func_qcolor_fromstring=no)
+    CPPFLAGS="$ac_octave_save_CPPFLAGS"
+    CXXFLAGS="$ac_octave_save_CXXFLAGS"
+    AC_LANG_POP(C++)
+  ])
+  if test $octave_cv_func_qcolor_fromstring = yes; then
+    AC_DEFINE(HAVE_QCOLOR_FROMSTRING, 1,
+      [Define to 1 if you have the `QColor::fromString' member function.])
+  fi
+])
+dnl
 dnl Check whether HDF5 library has version 1.6 API functions.
 dnl
 AC_DEFUN([OCTAVE_CHECK_HDF5_HAS_VER_16_API], [
@@ -2329,6 +2360,7 @@ AC_DEFUN([OCTAVE_CHECK_QT_VERSION], [AC_MSG_CHECKING([Qt version $1])
     OCTAVE_CHECK_FUNC_QTEXTSTREAM_SETENCODING
     OCTAVE_CHECK_ENUM_QT_KEY_MICRO
     OCTAVE_CHECK_SIGNAL_QCHECKBOX_CHECKSTATECHANGED
+    OCTAVE_CHECK_FUNC_QCOLOR_FROMSTRING
 
     OCTAVE_CHECK_QREGION_ITERATORS
     OCTAVE_CHECK_QT_IMCURSORRECTANGLE_ENUM_VALUE
