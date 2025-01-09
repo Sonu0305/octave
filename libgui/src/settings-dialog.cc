@@ -578,7 +578,12 @@ settings_dialog::read_settings (bool first)
       editor_styles_layout->addLayout (current_line);
 
       // update colors depending on second theme selection
-      connect (cb_color_mode, &QCheckBox::stateChanged,
+      connect (cb_color_mode,
+#if defined (HAVE_QCHECKBOX_CHECKSTATECHANGED)
+               &QCheckBox::checkStateChanged,
+#else
+               &QCheckBox::stateChanged,
+#endif
                this, &settings_dialog::update_editor_lexers);
       connect (pb_reload_default_colors, &QPushButton::clicked,
                [this] () { update_editor_lexers (settings_reload_default_colors_flag); });
@@ -1507,7 +1512,12 @@ settings_dialog::read_workspace_colors ()
 
   // update colors depending on second theme selection or reloading
   // the dfault values
-  connect (cb_color_mode, &QCheckBox::stateChanged,
+  connect (cb_color_mode,
+#if defined (HAVE_QCHECKBOX_CHECKSTATECHANGED)
+           &QCheckBox::checkStateChanged,
+#else
+           &QCheckBox::stateChanged,
+#endif
            this, &settings_dialog::update_workspace_colors);
   connect (pb_reload_default_colors, &QPushButton::clicked,
            [this] () { update_workspace_colors (settings_reload_default_colors_flag); });
@@ -1622,7 +1632,12 @@ settings_dialog::read_terminal_colors ()
   terminal_colors_box->setLayout (style_grid);
 
   // update colors depending on second theme selection
-  connect (cb_color_mode, &QCheckBox::stateChanged,
+  connect (cb_color_mode,
+#if defined (HAVE_QCHECKBOX_CHECKSTATECHANGED)
+           &QCheckBox::checkStateChanged,
+#else
+           &QCheckBox::stateChanged,
+#endif
            this, &settings_dialog::update_terminal_colors);
   connect (pb_reload_default_colors, &QPushButton::clicked,
            [this] () { update_terminal_colors (settings_reload_default_colors_flag); });
@@ -1735,7 +1750,12 @@ settings_dialog::read_varedit_colors ()
   varedit_colors_box->setLayout (style_grid);
 
   // update colors depending on second theme selection
-  connect (cb_color_mode, &QCheckBox::stateChanged,
+  connect (cb_color_mode,
+#if defined (HAVE_QCHECKBOX_CHECKSTATECHANGED)
+           &QCheckBox::checkStateChanged,
+#else
+           &QCheckBox::stateChanged,
+#endif
            this, &settings_dialog::update_varedit_colors);
   connect (pb_reload_default_colors, &QPushButton::clicked,
            [this] () { update_varedit_colors (settings_reload_default_colors_flag); });

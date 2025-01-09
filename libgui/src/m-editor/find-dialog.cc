@@ -150,12 +150,22 @@ find_dialog::find_dialog (octave_dock_widget *ed, QWidget *p)
            this, &find_dialog::replace);
   connect (m_replace_all_button, &QPushButton::clicked,
            this, &find_dialog::replace_all);
-  connect (m_backward_check_box, &QCheckBox::stateChanged,
+  connect (m_backward_check_box,
+#if defined (HAVE_QCHECKBOX_CHECKSTATECHANGED)
+           &QCheckBox::checkStateChanged,
+#else
+           &QCheckBox::stateChanged,
+#endif
            this, &find_dialog::handle_backward_search_changed);
   connect (m_button_box, &QDialogButtonBox::rejected,
            this, &find_dialog::close);
 
-  connect (m_search_selection_check_box, &QCheckBox::stateChanged,
+  connect (m_search_selection_check_box,
+#if defined (HAVE_QCHECKBOX_CHECKSTATECHANGED)
+           &QCheckBox::checkStateChanged,
+#else
+           &QCheckBox::stateChanged,
+#endif
            this, &find_dialog::handle_sel_search_changed);
 
   QVBoxLayout *extension_layout = new QVBoxLayout ();

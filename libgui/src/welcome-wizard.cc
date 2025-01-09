@@ -300,7 +300,12 @@ setup_community_news::setup_community_news (welcome_wizard *wizard)
   m_next->setDefault (true);
   m_next->setFocus ();
 
-  connect (m_checkbox, &QCheckBox::stateChanged,
+  connect (m_checkbox,
+#if defined (HAVE_QCHECKBOX_CHECKSTATECHANGED)
+           &QCheckBox::checkStateChanged,
+#else
+           &QCheckBox::stateChanged,
+#endif
            wizard, &welcome_wizard::handle_web_connect_option);
 
   connect (m_previous, &QPushButton::clicked, wizard, &welcome_wizard::previous_page);

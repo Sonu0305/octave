@@ -246,10 +246,20 @@ shortcut_edit_dialog::shortcut_edit_dialog
 
   setLayout (box);
 
-  connect (direct, &QCheckBox::stateChanged,
+  connect (direct,
+#if defined (HAVE_QCHECKBOX_CHECKSTATECHANGED)
+           &QCheckBox::checkStateChanged,
+#else
+           &QCheckBox::stateChanged,
+#endif
            m_edit_actual, &enter_shortcut::handle_direct_shortcut);
 
-  connect (shift, &QCheckBox::stateChanged,
+  connect (shift,
+#if defined (HAVE_QCHECKBOX_CHECKSTATECHANGED)
+           &QCheckBox::checkStateChanged,
+#else
+           &QCheckBox::stateChanged,
+#endif
            m_edit_actual, &enter_shortcut::handle_shift_modifier);
 
   connect (this, &QDialog::finished,
