@@ -31,17 +31,6 @@
 #include <iosfwd>
 #include <string>
 
-#if defined (OCTAVE_USE_WINDOWS_API)
-// Some Windows headers must be included in a certain order.
-// Don't include "windows.h" here to avoid potential issues due to that.
-// Instead just define the one type we need for the interface of one function.
-struct OCTAVE_WIN_FILETIME
-{
-  uint32_t dwLowDateTime;
-  uint32_t dwHighDateTime;
-};
-#endif
-
 
 static inline double
 as_double (OCTAVE_TIME_T sec, long usec)
@@ -481,14 +470,6 @@ public:
   file_time (OCTAVE_TIME_T t)
     : m_time (t)
   { }
-
-#if defined (OCTAVE_USE_WINDOWS_API)
-  file_time (OCTAVE_WIN_FILETIME& t)
-  {
-    m_time = (static_cast<OCTAVE_TIME_T> (t.dwHighDateTime)) << 32
-             | (static_cast<OCTAVE_TIME_T> (t.dwLowDateTime));
-  }
-#endif
 
   file_time (const std::string& filename);
 
