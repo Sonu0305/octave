@@ -216,16 +216,19 @@ file_stat::update_internal (bool force)
       const char *cname = full_file_name.c_str ();
 
       time_t sys_atime, sys_mtime, sys_ctime;
+      long int atime_nsec, mtime_nsec, ctime_nsec;
 
       int status
         = (m_follow_links
            ? octave_stat_wrapper (cname, &m_mode, &m_ino, &m_dev,
                                   &m_nlink, &m_uid, &m_gid, &m_size,
-                                  &sys_atime, &sys_mtime, &sys_ctime,
+                                  &sys_atime, &atime_nsec, &sys_mtime,
+                                  &mtime_nsec, &sys_ctime, &ctime_nsec,
                                   &m_rdev, &m_blksize, &m_blocks)
            : octave_lstat_wrapper (cname, &m_mode, &m_ino, &m_dev,
                                    &m_nlink, &m_uid, &m_gid, &m_size,
-                                   &sys_atime, &sys_mtime, &sys_ctime,
+                                   &sys_atime, &atime_nsec, &sys_mtime,
+                                   &mtime_nsec, &sys_ctime, &ctime_nsec,
                                    &m_rdev, &m_blksize, &m_blocks));
 
       if (status < 0)
@@ -235,9 +238,12 @@ file_stat::update_internal (bool force)
         }
       else
         {
-          m_atime = sys::time (static_cast<OCTAVE_TIME_T> (sys_atime));
-          m_mtime = sys::time (static_cast<OCTAVE_TIME_T> (sys_mtime));
-          m_ctime = sys::time (static_cast<OCTAVE_TIME_T> (sys_ctime));
+          m_atime = sys::time (static_cast<OCTAVE_TIME_T> (sys_atime),
+                               atime_nsec/1000);
+          m_mtime = sys::time (static_cast<OCTAVE_TIME_T> (sys_mtime),
+                               mtime_nsec/1000);
+          m_ctime = sys::time (static_cast<OCTAVE_TIME_T> (sys_ctime),
+                               ctime_nsec/1000);
         }
 
       m_initialized = true;
@@ -253,11 +259,13 @@ file_fstat::update_internal (bool force)
       m_fail = false;
 
       time_t sys_atime, sys_mtime, sys_ctime;
+      long int atime_nsec, mtime_nsec, ctime_nsec;
 
       int status
         = octave_fstat_wrapper (m_fid, &m_mode, &m_ino, &m_dev,
                                 &m_nlink, &m_uid, &m_gid, &m_size,
-                                &sys_atime, &sys_mtime, &sys_ctime,
+                                &sys_atime, &atime_nsec, &sys_mtime,
+                                &mtime_nsec, &sys_ctime, &ctime_nsec,
                                 &m_rdev, &m_blksize, &m_blocks);
 
       if (status < 0)
@@ -267,9 +275,12 @@ file_fstat::update_internal (bool force)
         }
       else
         {
-          m_atime = sys::time (static_cast<OCTAVE_TIME_T> (sys_atime));
-          m_mtime = sys::time (static_cast<OCTAVE_TIME_T> (sys_mtime));
-          m_ctime = sys::time (static_cast<OCTAVE_TIME_T> (sys_ctime));
+          m_atime = sys::time (static_cast<OCTAVE_TIME_T> (sys_atime),
+                               atime_nsec/1000);
+          m_mtime = sys::time (static_cast<OCTAVE_TIME_T> (sys_mtime),
+                               mtime_nsec/1000);
+          m_ctime = sys::time (static_cast<OCTAVE_TIME_T> (sys_ctime),
+                               ctime_nsec/1000);
         }
 
       m_initialized = true;

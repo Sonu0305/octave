@@ -49,21 +49,24 @@ extern OCTAVE_API int
 octave_stat_wrapper (const char *fname, mode_t *mode, ino_t *ino,
                      dev_t *dev, nlink_t *nlink, uid_t *uid,
                      gid_t *gid, off_t *size, time_t *atime,
-                     time_t *mtime, time_t *ctime, dev_t *rdev,
+                     long int *atime_nsec, time_t *mtime, long int *mtime_nsec,
+                     time_t *ctime, long int *ctime_nsec, dev_t *rdev,
                      long *blksize, long *blocks);
 
 extern OCTAVE_API int
 octave_lstat_wrapper (const char *lname, mode_t *mode, ino_t *ino,
                       dev_t *dev, nlink_t *nlink, uid_t *uid,
                       gid_t *gid, off_t *size, time_t *atime,
-                      time_t *mtime, time_t *ctime, dev_t *rdev,
+                      long int *atime_nsec, time_t *mtime, long int *mtime_nsec,
+                      time_t *ctime, long int *ctime_nsec, dev_t *rdev,
                       long *blksize, long *blocks);
 
 extern OCTAVE_API int
 octave_fstat_wrapper (int fid, mode_t *mode, ino_t *ino,
                       dev_t *dev, nlink_t *nlink, uid_t *uid,
                       gid_t *gid, off_t *size, time_t *atime,
-                      time_t *mtime, time_t *ctime, dev_t *rdev,
+                      long int *atime_nsec, time_t *mtime, long int *mtime_nsec,
+                      time_t *ctime, long int *ctime_nsec, dev_t *rdev,
                       long *blksize, long *blocks);
 
 extern OCTAVE_API bool octave_is_blk_wrapper (mode_t mode);

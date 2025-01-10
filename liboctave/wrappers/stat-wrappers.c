@@ -37,6 +37,19 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+// Silence compiler warning if stat doesn't support nanosecond-precision
+// time stamps (e.g., on Windows).
+#if defined (HAVE_PRAGMA_GCC_DIAGNOSTIC)
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wunused-parameter"
+#endif
+
+#include "stat-time.h"
+
+#if defined (HAVE_PRAGMA_GCC_DIAGNOSTIC)
+#  pragma GCC diagnostic pop
+#endif
+
 #include "stat-wrappers.h"
 #include "uniconv-wrappers.h"
 
@@ -75,7 +88,8 @@ static inline void
 assign_stat_fields (struct stat *buf, mode_t *mode, ino_t *ino,
                     dev_t *dev, nlink_t *nlink, uid_t *uid,
                     gid_t *gid, off_t *size, time_t *atime,
-                    time_t *mtime, time_t *ctime, dev_t *rdev,
+                    long int *atime_nsec, time_t *mtime, long int *mtime_nsec,
+                    time_t *ctime, long int *ctime_nsec, dev_t *rdev,
                     long *blksize, long *blocks)
 {
   *mode = buf->st_mode;
@@ -86,8 +100,11 @@ assign_stat_fields (struct stat *buf, mode_t *mode, ino_t *ino,
   *gid = buf->st_gid;
   *size = buf->st_size;
   *atime = buf->st_atime;
+  *atime_nsec = get_stat_atime_ns (buf);
   *mtime = buf->st_mtime;
+  *mtime_nsec = get_stat_mtime_ns (buf);
   *ctime = buf->st_ctime;
+  *ctime_nsec = get_stat_ctime_ns (buf);
 
 #if defined (HAVE_STRUCT_STAT_ST_RDEV)
   *rdev = buf->st_rdev;
@@ -112,7 +129,8 @@ int
 octave_stat_wrapper (const char *fname, mode_t *mode, ino_t *ino,
                      dev_t *dev, nlink_t *nlink, uid_t *uid,
                      gid_t *gid, off_t *size, time_t *atime,
-                     time_t *mtime, time_t *ctime, dev_t *rdev,
+                     long int *atime_nsec, time_t *mtime, long int *mtime_nsec,
+                     time_t *ctime, long int *ctime_nsec, dev_t *rdev,
                      long *blksize, long *blocks)
 {
   struct stat buf;
@@ -126,7 +144,8 @@ octave_stat_wrapper (const char *fname, mode_t *mode, ino_t *ino,
 #endif
 
   assign_stat_fields (&buf, mode, ino, dev, nlink, uid, gid, size,
-                      atime, mtime, ctime, rdev, blksize, blocks);
+                      atime, atime_nsec, mtime, mtime_nsec, ctime, ctime_nsec,
+                      rdev, blksize, blocks);
 
   return status;
 }
@@ -135,7 +154,8 @@ int
 octave_lstat_wrapper (const char *lname, mode_t *mode, ino_t *ino,
                       dev_t *dev, nlink_t *nlink, uid_t *uid,
                       gid_t *gid, off_t *size, time_t *atime,
-                      time_t *mtime, time_t *ctime, dev_t *rdev,
+                      long int *atime_nsec, time_t *mtime, long int *mtime_nsec,
+                      time_t *ctime, long int *ctime_nsec, dev_t *rdev,
                       long *blksize, long *blocks)
 {
   struct stat buf;
@@ -150,7 +170,8 @@ octave_lstat_wrapper (const char *lname, mode_t *mode, ino_t *ino,
 #endif
 
   assign_stat_fields (&buf, mode, ino, dev, nlink, uid, gid, size,
-                      atime, mtime, ctime, rdev, blksize, blocks);
+                      atime, atime_nsec, mtime, mtime_nsec, ctime, ctime_nsec,
+                      rdev, blksize, blocks);
 
   return status;
 }
@@ -159,7 +180,8 @@ int
 octave_fstat_wrapper (int fid, mode_t *mode, ino_t *ino,
                       dev_t *dev, nlink_t *nlink, uid_t *uid,
                       gid_t *gid, off_t *size, time_t *atime,
-                      time_t *mtime, time_t *ctime, dev_t *rdev,
+                      long int *atime_nsec, time_t *mtime, long int *mtime_nsec,
+                      time_t *ctime, long int *ctime_nsec, dev_t *rdev,
                       long *blksize, long *blocks)
 {
   struct stat buf;
@@ -167,7 +189,8 @@ octave_fstat_wrapper (int fid, mode_t *mode, ino_t *ino,
   int status = fstat (fid, &buf);
 
   assign_stat_fields (&buf, mode, ino, dev, nlink, uid, gid, size,
-                      atime, mtime, ctime, rdev, blksize, blocks);
+                      atime, atime_nsec, mtime, mtime_nsec, ctime, ctime_nsec,
+                      rdev, blksize, blocks);
 
   return status;
 }
