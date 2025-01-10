@@ -378,8 +378,8 @@ file_time::file_time ()
   FILETIME curr_file_time;
   GetSystemTimeAsFileTime (&curr_file_time);
   m_time
-    = (static_cast<OCTAVE_TIME_T> (curr_file_time.dwHighDateTime)) >> 32
-      | curr_file_time.dwLowDateTime;
+    = (static_cast<OCTAVE_TIME_T> (curr_file_time.dwHighDateTime)) << 32
+      | (static_cast<OCTAVE_TIME_T> (curr_file_time.dwLowDateTime));
 #else
   time_t ot_unix_time;
   long ot_usec;
@@ -405,8 +405,8 @@ file_time::file_time (const std::string& filename)
   FILETIME last_write_time = file_attributes.ftLastWriteTime;
 
   m_time
-    = (static_cast<OCTAVE_TIME_T> (last_write_time.dwHighDateTime)) >> 32
-      | last_write_time.dwLowDateTime;
+    = (static_cast<OCTAVE_TIME_T> (last_write_time.dwHighDateTime)) << 32
+      | (static_cast<OCTAVE_TIME_T> (last_write_time.dwLowDateTime));
 #else
   file_stat fs = file_stat (filename);
   m_time = fs.mtime ().unix_time ();
