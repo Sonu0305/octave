@@ -492,7 +492,7 @@ public:
   {
 #if defined (OCTAVE_USE_WINDOWS_API)
     // FAT file systems have 2 seconds resolution for the modification time.
-    static OCTAVE_TIME_T time_resolution = 20000;
+    static OCTAVE_TIME_T time_resolution = 20000000;
 #else
     // Assume 1 second (see file_stat)
     static OCTAVE_TIME_T time_resolution = 1;
@@ -554,7 +554,7 @@ private:
 
   // The native file time type differs per platform.
   // On POSIX, this is the number of 1 second intervals since the epoch.
-  // On Windows, this is the number of 0.1 ms intervals since a different epoch.
+  // On Windows, this is the number of 100 ns intervals since a different epoch.
   OCTAVE_TIME_T m_time;
 };
 
