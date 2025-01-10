@@ -485,8 +485,8 @@ public:
 #if defined (OCTAVE_USE_WINDOWS_API)
   file_time (OCTAVE_WIN_FILETIME& t)
   {
-    m_time = (static_cast<OCTAVE_TIME_T> (t.dwHighDateTime)) >> 32
-             | t.dwLowDateTime;
+    m_time = (static_cast<OCTAVE_TIME_T> (t.dwHighDateTime)) << 32
+             | (static_cast<OCTAVE_TIME_T> (t.dwLowDateTime));
   }
 #endif
 
