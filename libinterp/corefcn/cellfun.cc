@@ -666,7 +666,7 @@ nevermind:
 
               for (int j = 0; j < num_to_copy; j++)
                 {
-                  if (! tmp(j).is_defined ())
+                  if (tmp(j).is_undefined ())
                     error ("cellfun: function returned fewer than nargout values");
                   results[j](count) = tmp(j);
                 }
@@ -1427,7 +1427,7 @@ arrayfun (@@str2num, [1234],
 
                   for (int j = 0; j < num_to_copy; j++)
                     {
-                      if (! tmp(j).is_defined ())
+                      if (tmp(j).is_undefined ())
                         error ("arrayfun: function returned fewer than nargout values");
                       results[j](count) = tmp(j);
                     }
