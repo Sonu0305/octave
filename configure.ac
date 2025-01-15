@@ -2754,6 +2754,27 @@ if test $OCTAVE_RELOCATE_ALL = yes; then
 fi
 AM_CONDITIONAL([AMCOND_RELOCATE_ALL], [test $OCTAVE_RELOCATE_ALL = yes])
 
+OCTAVE_RELOCATE_WITH_CYGPATH="no"
+CYGPATH=""
+if test $OCTAVE_RELOCATE_ALL = yes; then
+  case $host_os in
+    mingw*)
+      # If this is on MSYS2, paths (including the installation prefix) can be
+      # represented in UNIX or Windows compatible form.  The prefix should be
+      # relocated no matter in which form it appears.
+
+      # Check for the tool "cygpath" that can be used to convert between the
+      # different forms.
+      AC_CHECK_TOOL(CYGPATH, [cygpath])
+      if test -n "$CYGPATH"; then
+        OCTAVE_RELOCATE_WITH_CYGPATH="yes"
+      fi
+    ;;
+  esac
+fi
+AC_SUBST(OCTAVE_RELOCATE_WITH_CYGPATH)
+AC_SUBST(CYGPATH)
+
 ### Determine whether Mercurial ID should be embedded in library binaries.
 
 ENABLE_HG_ID=yes
